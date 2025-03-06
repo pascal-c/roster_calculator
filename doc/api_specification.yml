@@ -1,0 +1,166 @@
+openapi: 3.0.1
+info:
+  title: Roster Calculator API
+  description: |-
+    The roster calculator calculates the best roster for given dates based on the availability and constraints of given people.
+
+  contact:
+    email: pascal.keimel@apwp.de
+  version: 0.0.1
+servers:
+  - url: https://roster-calculator.de/v1
+paths:
+  /roster:
+    post:
+      summary: start a new roster calculation
+      description: start a new roster calculation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preconditions'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Roster'
+        '422':
+          description: Validation exception
+  /roster/{rosterCalculationId}:
+    get:
+      summary: get status of a roster calculation with result if already completed
+      parameters:
+        - name: rosterCalculationId
+          in: path
+          description: ID of calculation to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Roster'
+        '404':
+          description: Invalid id supplied
+components:
+  schemas:
+    Preconditions:
+      type: object
+      required:
+        - dates
+        - people
+      properties:
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Date'
+        people:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+    Roster:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - not_started
+            - in_progress
+            - completed
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/Date'
+    Date:
+      type: object
+      required:
+        - id
+        - date
+        - daytime
+        - person_ids
+        - location_id
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date
+        daytime:
+          type: string
+          enum:
+            - all
+            - am
+            - pm
+        person_ids:
+          type: array
+          items:
+            type: string
+        location_id:
+          type: string
+    Person:
+      type: object
+      required:
+        - id
+        - constraints
+        - availabilities
+      properties:
+        id:
+          type: string
+        constraints:
+          type: object
+          required:
+            - wishedShiftsPerMonth
+            - maxShiftsPerMonth
+            - maxShiftsPerDay
+          properties:
+            wishedShiftsPerMonth:
+              type: integer
+            maxShiftsPerMonth:
+              type: integer
+            maxShiftsPerDay:
+              type: integer
+            maxShiftsPerWeek:
+              type: integer
+        availabilities:
+          type: array
+          items:
+            type: object
+            required:
+              - date
+              - daytime
+              - availability
+            properties:
+              date:
+                type: string
+                format: date
+              daytime:
+                type: string
+                enum:
+                  - am
+                  - pm
+              availability:
+                type: string
+                enum:
+                  - maybe
+                  - no
+                  - yes
+    Location:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
