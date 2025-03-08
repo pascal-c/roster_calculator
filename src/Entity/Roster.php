@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RosterRepository;
@@ -30,6 +32,10 @@ class Roster
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
+
+    private array $locations = [];
+    private array $shifts = [];
+    private array $people = [];
 
     public function getId(): ?int
     {
@@ -106,5 +112,45 @@ class Roster
         $this->completedAt = $completedAt;
 
         return $this;
+    }
+
+    public function addPerson(Person $person): static
+    {
+        $this->people[$person->id] = $person;
+
+        return $this;
+    }
+
+    public function getPerson(string $id): Person
+    {
+        return $this->people[$id];
+    }
+
+    public function addShift(Shift $shift): static
+    {
+        $this->shifts[] = $shift;
+
+        return $this;
+    }
+
+    public function getShifts(): array
+    {
+        return $this->shifts;
+    }
+
+    public function addLocation(Location $location): static
+    {
+        $this->locations[$location->id] = $location;
+
+        return $this;
+    }
+
+    public function getLocation(?string $id): ?Location
+    {
+        if (is_null($id)) {
+            return null;
+        }
+
+        return $this->locations[$id];
     }
 }
