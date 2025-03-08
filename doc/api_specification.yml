@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Roster Calculator API
   description: |-
-    The roster calculator calculates the best roster for given dates based on the availability and constraints of given people.
+    The roster calculator calculates the best roster for given shifts based on the availability and constraints of given people.
 
   contact:
     email: pascal.keimel@apwp.de
@@ -12,8 +12,7 @@ servers:
 paths:
   /roster:
     post:
-      summary: start a new roster calculation
-      description: start a new roster calculation
+      summary: create a new roster for calculation
       requestBody:
         content:
           application/json:
@@ -55,13 +54,18 @@ components:
     Preconditions:
       type: object
       required:
-        - dates
+        - locations
+        - shifts
         - people
       properties:
-        dates:
+        locations:
           type: array
           items:
-            $ref: '#/components/schemas/Date'
+            $ref: '#/components/schemas/Location'
+        shifts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shift'
         people:
           type: array
           items:
@@ -80,18 +84,17 @@ components:
             - not_started
             - in_progress
             - completed
-        dates:
+        shifts:
           type: array
           items:
-            $ref: '#/components/schemas/Date'
-    Date:
+            $ref: '#/components/schemas/Shift'
+    Shift:
       type: object
       required:
         - id
         - date
         - daytime
         - person_ids
-        - location_id
       properties:
         id:
           type: string
@@ -104,27 +107,35 @@ components:
             - all
             - am
             - pm
-        person_ids:
+        personIds:
           type: array
           items:
             type: string
-        location_id:
+        locationId:
           type: string
     Person:
       type: object
       required:
         - id
+        - gender
         - constraints
         - availabilities
       properties:
         id:
           type: string
+        gender:
+          type: string
+          enum:
+            - diverse
+            - female
+            - male
         constraints:
           type: object
           required:
             - wishedShiftsPerMonth
             - maxShiftsPerMonth
             - maxShiftsPerDay
+            - targetShifts
           properties:
             wishedShiftsPerMonth:
               type: integer
@@ -133,6 +144,8 @@ components:
             maxShiftsPerDay:
               type: integer
             maxShiftsPerWeek:
+              type: integer
+            targetShifts:
               type: integer
         availabilities:
           type: array

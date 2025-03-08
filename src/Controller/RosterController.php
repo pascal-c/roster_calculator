@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Roster;
 use App\Repository\RosterRepository;
+use App\Service\RosterBuilder;
 use App\Service\TimeService;
-use App\Value\Status;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +20,7 @@ class RosterController extends AbstractController
         private EntityManagerInterface $entityManager,
         private RosterRepository $rosterRepository,
         private TimeService $timeService,
+        private RosterBuilder $rosterBuilder,
     ) {
     }
 
@@ -29,18 +28,17 @@ class RosterController extends AbstractController
     public function create(Request $request): Response
     {
         $payload = $request->getPayload()->all();
-        if (!array_key_exists('dates', $payload)) {
-            return new JsonResponse(['error' => 'dates are missing'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (!array_key_exists('shifts', $payload)) {
+            return new JsonResponse(['error' => 'shifts are missing'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         if (!array_key_exists('people', $payload)) {
             return new JsonResponse(['error' => 'people are missing'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        $roster = new Roster();
-        $roster->setSlug(Uuid::uuid4()->toString());
-        $roster->setStatus(Status::NOT_STARTED->value);
-        $roster->setPreconditions($payload);
-        $roster->setCreatedAt($this->timeService->now());
+        try {
+            $roster = ($this->rosterBuilder)($payload);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $this->entityManager->persist($roster);
         $this->entityManager->flush();

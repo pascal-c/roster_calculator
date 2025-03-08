@@ -16,7 +16,7 @@ final class RosterCest
         $I->sendPostAsJson('/v1/roster', ['invalid' => 'payload']);
         $I->seeResponseCodeIs(422);
         $I->seeResponseContainsJson([
-            'error' => 'dates are missing',
+            'error' => 'shifts are missing',
         ]);
     }
 
@@ -64,28 +64,31 @@ final class RosterCest
     private function getPayload(): array
     {
         return [
-            'dates' => [
+            'locations' => [],
+            'shifts' => [
                 [
+                    'id' => 'date1 id',
                     'date' => '2021-01-01',
                     'daytime' => 'am',
                     'person_ids' => ['uta'],
                     'location_id' => 'location1',
                 ],
                 [
+                    'id' => 'date2 id',
                     'date' => '2021-01-02',
                     'daytime' => 'pm',
                     'person_ids' => ['erwin'],
-                    'location_id' => 'location2',
                 ],
             ],
             'people' => [
                 [
                     'id' => 'uta',
+                    'gender' => 'diverse',
                     'constraints' => [
                         'wishedShiftsPerMonth' => 4,
                         'maxShiftsPerMonth' => 6,
                         'maxShiftsPerDay' => 1,
-                        'maxShiftsPerWeek' => 2,
+                        'targetShifts' => 3,
                     ],
                     'availabilities' => [
                         [
@@ -102,11 +105,13 @@ final class RosterCest
                 ],
                 [
                     'id' => 'erwin',
+                    'gender' => 'male',
                     'constraints' => [
                         'wishedShiftsPerMonth' => 4,
                         'maxShiftsPerMonth' => 6,
                         'maxShiftsPerDay' => 1,
                         'maxShiftsPerWeek' => 2,
+                        'targetShifts' => 4,
                     ],
                     'availabilities' => [
                         [
