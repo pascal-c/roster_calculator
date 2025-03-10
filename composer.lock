@@ -4754,16 +4754,16 @@
         },
         {
             "name": "codeception/module-symfony",
-            "version": "3.5.0",
+            "version": "3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/module-symfony.git",
-                "reference": "cad3c7a46da68f591dd363bc114ec9fde4f1dd63"
+                "reference": "12fdf094fea572f8fd6e975c4f4b440d95684d44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/module-symfony/zipball/cad3c7a46da68f591dd363bc114ec9fde4f1dd63",
-                "reference": "cad3c7a46da68f591dd363bc114ec9fde4f1dd63",
+                "url": "https://api.github.com/repos/Codeception/module-symfony/zipball/12fdf094fea572f8fd6e975c4f4b440d95684d44",
+                "reference": "12fdf094fea572f8fd6e975c4f4b440d95684d44",
                 "shasum": ""
             },
             "require": {
@@ -4776,33 +4776,34 @@
                 "codeception/module-asserts": "^3.0",
                 "codeception/module-doctrine": "^3.1",
                 "doctrine/orm": "^2.10",
-                "symfony/browser-kit": "^5.4 | ^6.4 | ^7.0",
-                "symfony/cache": "^5.4 | ^6.4 | ^7.0",
-                "symfony/config": "^5.4 | ^6.4 | ^7.0",
-                "symfony/dependency-injection": "^5.4 | ^6.4 | ^7.0",
-                "symfony/dom-crawler": "^5.4 | ^6.4 | ^7.0",
-                "symfony/dotenv": "^5.4 | ^6.4 | ^7.0",
-                "symfony/error-handler": "^5.4 | ^6.4 | ^7.0",
-                "symfony/filesystem": "^5.4 | ^6.4 | ^7.0",
-                "symfony/form": "^5.4 | ^6.4 | ^7.0",
-                "symfony/framework-bundle": "^5.4 | ^6.4 | ^7.0",
-                "symfony/http-client": "^5.4 | ^6.4 | ^7.0",
-                "symfony/http-foundation": "^5.4 | ^6.4 | ^7.0",
-                "symfony/http-kernel": "^5.4 | ^6.4 | ^7.0",
-                "symfony/mailer": "^5.4 | ^6.4 | ^7.0",
-                "symfony/mime": "^5.4 | ^6.4 | ^7.0",
-                "symfony/notifier": "^5.4 | ^6.4 | ^7.0",
-                "symfony/options-resolver": "^5.4 | ^6.4 | ^7.0",
-                "symfony/property-access": "^5.4 | ^6.4 | ^7.0",
-                "symfony/property-info": "^5.4 | ^6.4 | ^7.0",
-                "symfony/routing": "^5.4 | ^6.4 | ^7.0",
-                "symfony/security-bundle": "^5.4 | ^6.4 | ^7.0",
-                "symfony/security-core": "^5.4 | ^6.4 | ^7.0",
-                "symfony/security-csrf": "^5.4 | ^6.4 | ^7.0",
-                "symfony/security-http": "^5.4 | ^6.4 | ^7.0",
-                "symfony/twig-bundle": "^5.4 | ^6.4 | ^7.0",
-                "symfony/validator": "^5.4 | ^6.4 | ^7.0",
-                "symfony/var-exporter": "^5.4 | ^6.4 | ^7.0",
+                "symfony/browser-kit": "^5.4 | ^6.4 | ^7.2",
+                "symfony/cache": "^5.4 | ^6.4 | ^7.2",
+                "symfony/config": "^5.4 | ^6.4 | ^7.2",
+                "symfony/dependency-injection": "^5.4 | ^6.4 | ^7.2",
+                "symfony/dom-crawler": "^5.4 | ^6.4 | ^7.2",
+                "symfony/dotenv": "^5.4 | ^6.4 | ^7.2",
+                "symfony/error-handler": "^5.4 | ^6.4 | ^7.2",
+                "symfony/filesystem": "^5.4 | ^6.4 | ^7.2",
+                "symfony/form": "^5.4 | ^6.4 | ^7.2",
+                "symfony/framework-bundle": "^5.4 | ^6.4 | ^7.2",
+                "symfony/http-client": "^5.4 | ^6.4 | ^7.2",
+                "symfony/http-foundation": "^5.4 | ^6.4 | ^7.2",
+                "symfony/http-kernel": "^5.4 | ^6.4 | ^7.2",
+                "symfony/mailer": "^5.4 | ^6.4 | ^7.2",
+                "symfony/mime": "^5.4 | ^6.4 | ^7.2",
+                "symfony/notifier": "^5.4 | ^6.4 | ^7.2",
+                "symfony/options-resolver": "^5.4 | ^6.4 | ^7.2",
+                "symfony/property-access": "^5.4 | ^6.4 | ^7.2",
+                "symfony/property-info": "^5.4 | ^6.4 | ^7.2",
+                "symfony/routing": "^5.4 | ^6.4 | ^7.2",
+                "symfony/security-bundle": "^5.4 | ^6.4 | ^7.2",
+                "symfony/security-core": "^5.4 | ^6.4 | ^7.2",
+                "symfony/security-csrf": "^5.4 | ^6.4 | ^7.2",
+                "symfony/security-http": "^5.4 | ^6.4 | ^7.2",
+                "symfony/translation": "^5.4 | ^6.4 | ^7.2",
+                "symfony/twig-bundle": "^5.4 | ^6.4 | ^7.2",
+                "symfony/validator": "^5.4 | ^6.4 | ^7.2",
+                "symfony/var-exporter": "^5.4 | ^6.4 | ^7.2",
                 "vlucas/phpdotenv": "^4.2 | ^5.4"
             },
             "suggest": {
@@ -4837,9 +4838,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/module-symfony/issues",
-                "source": "https://github.com/Codeception/module-symfony/tree/3.5.0"
+                "source": "https://github.com/Codeception/module-symfony/tree/3.5.1"
             },
-            "time": "2024-11-14T04:45:04+00:00"
+            "time": "2025-02-20T16:35:08+00:00"
         },
         {
             "name": "codeception/stub",
@@ -6337,16 +6338,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.10",
+            "version": "11.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "d5df2b32d729562ff8db634678d71085ee579006"
+                "reference": "d42785840519401ed2113292263795eb4c0f95da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d5df2b32d729562ff8db634678d71085ee579006",
-                "reference": "d5df2b32d729562ff8db634678d71085ee579006",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d42785840519401ed2113292263795eb4c0f95da",
+                "reference": "d42785840519401ed2113292263795eb4c0f95da",
                 "shasum": ""
             },
             "require": {
@@ -6360,14 +6361,14 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.2",
-                "phpunit/php-code-coverage": "^11.0.8",
+                "phpunit/php-code-coverage": "^11.0.9",
                 "phpunit/php-file-iterator": "^5.1.0",
                 "phpunit/php-invoker": "^5.0.1",
                 "phpunit/php-text-template": "^4.0.1",
                 "phpunit/php-timer": "^7.0.1",
                 "sebastian/cli-parser": "^3.0.2",
                 "sebastian/code-unit": "^3.0.2",
-                "sebastian/comparator": "^6.3.0",
+                "sebastian/comparator": "^6.3.1",
                 "sebastian/diff": "^6.0.2",
                 "sebastian/environment": "^7.2.0",
                 "sebastian/exporter": "^6.3.0",
@@ -6418,7 +6419,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.10"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.12"
             },
             "funding": [
                 {
@@ -6434,7 +6435,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-02-25T06:11:48+00:00"
+            "time": "2025-03-07T07:31:03+00:00"
         },
         {
             "name": "psr/http-client",
@@ -7417,16 +7418,16 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "6.3.0",
+            "version": "6.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "d4e47a769525c4dd38cea90e5dcd435ddbbc7115"
+                "reference": "24b8fbc2c8e201bb1308e7b05148d6ab393b6959"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/d4e47a769525c4dd38cea90e5dcd435ddbbc7115",
-                "reference": "d4e47a769525c4dd38cea90e5dcd435ddbbc7115",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/24b8fbc2c8e201bb1308e7b05148d6ab393b6959",
+                "reference": "24b8fbc2c8e201bb1308e7b05148d6ab393b6959",
                 "shasum": ""
             },
             "require": {
@@ -7445,7 +7446,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "6.2-dev"
+                    "dev-main": "6.3-dev"
                 }
             },
             "autoload": {
@@ -7485,7 +7486,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
                 "security": "https://github.com/sebastianbergmann/comparator/security/policy",
-                "source": "https://github.com/sebastianbergmann/comparator/tree/6.3.0"
+                "source": "https://github.com/sebastianbergmann/comparator/tree/6.3.1"
             },
             "funding": [
                 {
@@ -7493,7 +7494,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-06T10:28:19+00:00"
+            "time": "2025-03-07T06:57:01+00:00"
         },
         {
             "name": "sebastian/complexity",
@@ -8774,5 +8775,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
