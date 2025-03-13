@@ -64,7 +64,12 @@ final class RosterCest
     private function getPayload(): array
     {
         return [
-            'locations' => [],
+            'locations' => [
+                [
+                    'id' => 'location1',
+                    'blockedPeople' => ['erwin'],
+                ],
+            ],
             'shifts' => [
                 [
                     'id' => 'date1 id',

@@ -29,11 +29,6 @@ class RosterBuilder
         $roster->setPreconditions($payload);
         $roster->setCreatedAt($this->timeService->now());
 
-        foreach ($payload['locations'] as $locationPayload) {
-            $location = new Location($locationPayload['id']);
-            $roster->addLocation($location);
-        }
-
         foreach ($payload['people'] as $personPayload) {
             $person = new Person(
                 id: $personPayload['id'],
@@ -56,6 +51,15 @@ class RosterBuilder
             }
 
             $roster->addPerson($person);
+        }
+
+        foreach ($payload['locations'] as $locationPayload) {
+            $blockedPeople = array_map(
+                fn (string $personId): Person => $roster->getPerson($personId),
+                $locationPayload['blockedPeople'] ?? [],
+            );
+            $location = new Location($locationPayload['id'], $blockedPeople);
+            $roster->addLocation($location);
         }
 
         foreach ($payload['shifts'] as $shiftPayload) {

@@ -177,3 +177,7 @@ components:
       properties:
         id:
           type: string
+        blockedPeopleIds:
+          type: array
+          items:
+            type: string
