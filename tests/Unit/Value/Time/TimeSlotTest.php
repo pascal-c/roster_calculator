@@ -6,10 +6,10 @@ use App\Value\Time\TimeSlot;
 
 class TimeSlotTest extends \Codeception\Test\Unit
 {
-    public function testGetIndex()
+    public function testGetDateIndex()
     {
         $timeSlot = new TimeSlot(new \DateTimeImmutable('2021-01-31'), TimeSlot::AM);
-        $this->assertSame('2021-01-31 am', $timeSlot->getIndex());
+        $this->assertSame('2021-01-31', $timeSlot->dateIndex);
     }
 
     public function testConstructWithInvalidDaytime()

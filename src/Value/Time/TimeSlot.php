@@ -11,8 +11,8 @@ class TimeSlot extends TimeSlotPeriod
         self::PM,
     ];
 
-    public function getIndex(): string
+    protected function generateTimeSlots(): array
     {
-        return $this->date->format('Y-m-d ').$this->daytime;
+        return [$this];
     }
 }

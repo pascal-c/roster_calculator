@@ -24,7 +24,7 @@ class Person
 
     public function addAvailability(Availability $availability): void
     {
-        $this->availabilities[$availability->timeSlot->getIndex()] = $availability;
+        $this->availabilities[$availability->timeSlot->dateIndex][$availability->timeSlot->daytime] = $availability;
     }
 
     public function isAvailableOn(TimeSlotPeriod $timeSlotPeriod): bool
@@ -35,8 +35,8 @@ class Person
     public function getAvailabilityOn(TimeSlotPeriod $timeSlotPeriod): string
     {
         $result = Availability::YES;
-        foreach ($timeSlotPeriod->getTimeSlots() as $timeSlot) {
-            $availability = $this->availabilities[$timeSlot->getIndex()] ?? null;
+        foreach ($timeSlotPeriod->timeSlots as $timeSlot) {
+            $availability = $this->availabilities[$timeSlot->dateIndex][$timeSlot->daytime] ?? null;
 
             if (null === $availability || Availability::NO === $availability->availability) {
                 return Availability::NO;

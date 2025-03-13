@@ -126,6 +126,11 @@ class Roster
         return $this->people[$id];
     }
 
+    public function getPeople(): array
+    {
+        return $this->people;
+    }
+
     public function addShift(Shift $shift): static
     {
         $this->shifts[] = $shift;
