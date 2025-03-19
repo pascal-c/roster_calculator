@@ -21,13 +21,22 @@ class RosterBuilder
     {
     }
 
-    public function __invoke(array $payload): Roster
+    public function buildNew(array $payload): Roster
     {
         $roster = new Roster();
         $roster->setSlug(Uuid::uuid4()->toString());
         $roster->setStatus(Status::NOT_STARTED->value);
         $roster->setPreconditions($payload);
         $roster->setCreatedAt($this->timeService->now());
+
+        $this->buildFromRoster($roster);
+
+        return $roster;
+    }
+
+    public function buildFromRoster(Roster $roster): void
+    {
+        $payload = $roster->getPreconditions();
 
         foreach ($payload['people'] as $personPayload) {
             $person = new Person(
@@ -78,7 +87,5 @@ class RosterBuilder
             );
             $roster->addShift($shift);
         }
-
-        return $roster;
     }
 }

@@ -8,6 +8,7 @@ use App\Entity\Person;
 use App\Entity\Shift;
 use App\Service\MaxShiftsReachedChecker;
 use App\Service\PeopleSorter;
+use App\Service\ResultService;
 use App\Value\Time\TimeSlotPeriod;
 use Codeception\Attribute\DataProvider;
 use Codeception\Stub;
@@ -43,21 +44,26 @@ final class PeopleSorterTest extends Unit
         $result = ['huhu' => 'haha'];
 
         $maxShiftsReachedChecker = Stub::make(MaxShiftsReachedChecker::class, [
-            'maxShiftsPerWeekReached' => Expected::exactly(2, function (string $checkedWeek, Person $checkedPerson) use ($person1, $person2, $maxShiftsWeekReached1, $maxShiftsWeekReached2): bool {
-                $this->assertEquals('2016-52', $checkedWeek);
-                $this->assertContainsEquals($checkedPerson, [$person1, $person2]);
+            'maxShiftsPerWeekReached' => Expected::exactly(2,
+                function (string $checkedWeek, Person $checkedPerson) use ($person1, $person2, $maxShiftsWeekReached1, $maxShiftsWeekReached2): bool {
+                    $this->assertEquals('2016-52', $checkedWeek);
+                    $this->assertContainsEquals($checkedPerson, [$person1, $person2]);
 
-                return ($person1 == $checkedPerson) ? $maxShiftsWeekReached1 : $maxShiftsWeekReached2;
-            }),
+                    return ($person1 == $checkedPerson) ? $maxShiftsWeekReached1 : $maxShiftsWeekReached2;
+                }
+            ),
         ]);
-        $sorter = Stub::construct(PeopleSorter::class, ['maxShiftsReachedChecker' => $maxShiftsReachedChecker], [
-            'getOpenTargetShifts' => Expected::exactly(2, function (Person $checkedPerson, array $checkedResult) use ($person1, $person2, $openTargetShifts1, $openTargetShifts2): int {
-                $this->assertContainsEquals($checkedPerson, [$person1, $person2]);
-                $this->assertEquals(['huhu' => 'haha'], $checkedResult);
+        $resultService = Stub::make(ResultService::class, [
+            'getOpenTargetShifts' => Expected::exactly(2,
+                function (array $checkedResult, Person $checkedPerson) use ($person1, $person2, $openTargetShifts1, $openTargetShifts2): int {
+                    $this->assertContainsEquals($checkedPerson, [$person1, $person2]);
+                    $this->assertEquals(['huhu' => 'haha'], $checkedResult);
 
-                return ($person1 == $checkedPerson) ? $openTargetShifts1 : $openTargetShifts2;
-            }),
+                    return ($person1 == $checkedPerson) ? $openTargetShifts1 : $openTargetShifts2;
+                }
+            ),
         ]);
+        $sorter = new PeopleSorter(maxShiftsReachedChecker: $maxShiftsReachedChecker, resultService: $resultService);
 
         $result = $sorter->sortForShift($shift, $people, $result);
         if (self::PERSON1_FIRST === $expectedFirstPerson) {

@@ -10,6 +10,7 @@ class PeopleSorter
 {
     public function __construct(
         private MaxShiftsReachedChecker $maxShiftsReachedChecker,
+        private ResultService $resultService,
     ) {
     }
 
@@ -36,9 +37,9 @@ class PeopleSorter
                 $person2Availability = $person2->getAvailabilityOn($shift->timeSlotPeriod);
                 if ($person1Availability == $person2Availability) {
                     return
-                        $this->getOpenTargetShifts($person2, $result)
+                        $this->resultService->getOpenTargetShifts($result, $person2)
                         <=>
-                        $this->getOpenTargetShifts($person1, $result);
+                        $this->resultService->getOpenTargetShifts($result, $person1);
                 }
 
                 // take available person with 'yes' before person with 'maybe'
@@ -47,10 +48,5 @@ class PeopleSorter
         );
 
         return $people;
-    }
-
-    public function getOpenTargetShifts(Person $person, array $result): int
-    {
-        return $person->targetShifts - $result['people'][$person->id]['calculatedShifts'];
     }
 }

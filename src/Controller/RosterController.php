@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Person;
 use App\Repository\RosterRepository;
+use App\Service\ResultService;
 use App\Service\RosterBuilder;
 use App\Service\TimeService;
+use App\Value\Gender;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,7 +38,7 @@ class RosterController extends AbstractController
             return new JsonResponse(['error' => 'people are missing'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         try {
-            $roster = ($this->rosterBuilder)($payload);
+            $roster = $this->rosterBuilder->buildNew($payload);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
