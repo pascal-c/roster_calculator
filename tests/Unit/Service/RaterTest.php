@@ -37,9 +37,9 @@ class RaterTest extends Unit
         $this->roster->addPerson($this->person1);
         $this->roster->addPerson($this->person2);
 
-        $this->shift1 = new Shift('shift1', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL), null, []);
-        $this->shift2 = new Shift('shift2', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-31'), TimeSlotPeriod::AM), null, []);
-        $this->shift3 = new Shift('shift3', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-30'), TimeSlotPeriod::PM), null, []);
+        $this->shift1 = new Shift('shift1', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL), null, [$this->person2]);
+        $this->shift2 = new Shift('shift2', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-31'), TimeSlotPeriod::AM), null, []); // not assigned -> 100 points
+        $this->shift3 = new Shift('shift3', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-30'), TimeSlotPeriod::PM), null, [$this->person1]); // is only maybe available -> 1 point
         $this->roster->addShift($this->shift1);
         $this->roster->addShift($this->shift2);
         $this->roster->addShift($this->shift3);
@@ -80,11 +80,11 @@ class RaterTest extends Unit
         $points = $this->rater->calculatePoints($result, $this->roster);
 
         $expectedPoints = [
-            'notAssigned' => 100,
-            'maybeClown' => 1,
+            'notAssigned' => 200,
+            'maybeClown' => 2,
             'targetPlays' => $expectedTargetPlayPoints,
             'maxPerWeek' => 20,
-            'total' => 121 + $expectedTargetPlayPoints,
+            'total' => 222 + $expectedTargetPlayPoints,
         ];
 
         $this->assertSame($expectedPoints, $points);

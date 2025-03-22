@@ -35,9 +35,9 @@ class Rater
         $shiftAssignments = $this->resultService->getShiftAssignments($result);
         foreach ($shiftAssignments as $shiftAssignment) {
             $shift = $shiftAssignment['shift'];
-            $addedPeople = $shiftAssignment['addedPeople'];
-            $points['notAssigned'] += $this->pointsForMissingPerson($addedPeople);
-            $points['maybeClown'] += $this->pointsForMaybePerson($shift, $addedPeople);
+            $allAssignedPeople = array_merge($shiftAssignment['addedPeople'], $shift->assignedPeople);
+            $points['notAssigned'] += $this->pointsForMissingPerson($allAssignedPeople);
+            $points['maybeClown'] += $this->pointsForMaybePerson($shift, $allAssignedPeople);
         }
 
         foreach ($roster->getPeople() as $person) {
@@ -50,17 +50,19 @@ class Rater
         return $points;
     }
 
-    private function pointsForMissingPerson(array $addedPeople): int
+    private function pointsForMissingPerson(array $allAssignedPeople): int
     {
-        return empty($addedPeople) ? static::POINTS_PER_MISSING_PERSON : 0;
+        $missingPeopleCount = max(0, 2 - count($allAssignedPeople));
+
+        return $missingPeopleCount * static::POINTS_PER_MISSING_PERSON;
     }
 
-    private function pointsForMaybePerson(Shift $shift, array $addedPeople): int
+    private function pointsForMaybePerson(Shift $shift, array $allAssignedPeople): int
     {
         $points = 0;
-        foreach ($addedPeople as $addedPerson) {
-            /** @var Person $addedPerson */
-            $availability = $addedPerson->getAvailabilityOn($shift->timeSlotPeriod);
+        foreach ($allAssignedPeople as $person) {
+            /** @var Person $person */
+            $availability = $person->getAvailabilityOn($shift->timeSlotPeriod);
             if (Availability::MAYBE === $availability) {
                 $points += static::POINTS_PER_MAYBE_PERSON;
             }

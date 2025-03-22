@@ -65,6 +65,6 @@ class AvailabilityChecker
             return false;
         }
 
-        return in_array($person, $location->blockedPeople);
+        return in_array($person, $location->blockedPeople, true);
     }
 }
