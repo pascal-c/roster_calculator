@@ -40,6 +40,9 @@ class Roster
     private int $shiftCount = 0;
     private array $weekIds = [];
 
+    #[ORM\Column(nullable: true)]
+    private ?array $result = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -174,5 +177,17 @@ class Roster
         }
 
         return $this->locations[$id];
+    }
+
+    public function getResult(): ?array
+    {
+        return $this->result;
+    }
+
+    public function setResult(?array $result): static
+    {
+        $this->result = $result;
+
+        return $this;
     }
 }

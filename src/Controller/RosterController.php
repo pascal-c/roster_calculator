@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Person;
 use App\Repository\RosterRepository;
-use App\Service\ResultService;
+use App\Serializer\ResultSerializer;
+use App\Service\Calculator;
 use App\Service\RosterBuilder;
 use App\Service\TimeService;
-use App\Value\Gender;
+use App\Value\Status;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +24,8 @@ class RosterController extends AbstractController
         private RosterRepository $rosterRepository,
         private TimeService $timeService,
         private RosterBuilder $rosterBuilder,
+        private Calculator $calculator,
+        private ResultSerializer $resultSerializer,
     ) {
     }
 
@@ -43,6 +45,12 @@ class RosterController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        $roster->setStartedAt($this->timeService->now());
+        $result = $this->calculator->calculate($roster);
+        $roster->setResult($this->resultSerializer->serialize($result));
+        $roster->setCompletedAt($this->timeService->now());
+        $roster->setStatus(Status::COMPLETED->value);
+
         $this->entityManager->persist($roster);
         $this->entityManager->flush();
 
@@ -50,6 +58,7 @@ class RosterController extends AbstractController
             'id' => $roster->getSlug(),
             'status' => $roster->getStatus(),
             'created_at' => $roster->getCreatedAt()->format('c'),
+            'result' => $roster->getResult(),
         ];
 
         return new JsonResponse($result, Response::HTTP_CREATED, ['location' => $this->generateUrl('show_roster', ['id' => $roster->getSlug()])]);
@@ -67,6 +76,7 @@ class RosterController extends AbstractController
             'id' => $roster->getSlug(),
             'status' => $roster->getStatus(),
             'created_at' => $roster->getCreatedAt()->format('c'),
+            'result' => $roster->getResult(),
         ];
 
         return new JsonResponse($result);

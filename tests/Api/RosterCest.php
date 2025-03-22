@@ -33,7 +33,26 @@ final class RosterCest
         ]);
         $I->seeHttpHeader('Location', '/v1/roster/'.$this->id);
         $I->seeResponseContainsJson([
-            'status' => 'not_started',
+            'status' => 'completed',
+        ]);
+        $I->seeResponseContainsJson([
+            'result' => [
+                'assignments' => [
+                    'date1 id' => [],
+                    'date2 id' => ['uta'],
+                ],
+                'calculatedShifts' => [
+                    'uta' => 2,
+                    'erwin' => 1,
+                ],
+                'rating' => [
+                    'notAssigned' => 100, // nobody assigned for date1
+                    'maybeClown' => 1, // uta is only maybe available for date2
+                    'targetPlays' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                    'maxPerWeek' => 0,
+                    'total' => 109,
+                ],
+            ],
         ]);
     }
 
@@ -48,7 +67,7 @@ final class RosterCest
             'created_at' => 'string',
         ]);
         $I->seeResponseContainsJson([
-            'status' => 'not_started',
+            'status' => 'completed',
         ]);
     }
 
@@ -75,14 +94,14 @@ final class RosterCest
                     'id' => 'date1 id',
                     'date' => '2021-01-01',
                     'daytime' => 'am',
-                    'person_ids' => ['uta'],
-                    'location_id' => 'location1',
+                    'personIds' => ['uta'],
+                    'locationId' => 'location1',
                 ],
                 [
                     'id' => 'date2 id',
                     'date' => '2021-01-02',
                     'daytime' => 'pm',
-                    'person_ids' => ['erwin'],
+                    'personIds' => ['erwin'],
                 ],
             ],
             'people' => [
@@ -104,7 +123,7 @@ final class RosterCest
                         [
                             'date' => '2021-01-02',
                             'daytime' => 'pm',
-                            'availability' => 'no',
+                            'availability' => 'maybe',
                         ],
                     ],
                 ],

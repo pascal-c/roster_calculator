@@ -262,6 +262,17 @@ class ResultServiceTest extends \Codeception\Test\Unit
         $this->assertSame(2, $calculatedShifts);
     }
 
+    public function testGetAllCalculatedShifts(): void
+    {
+        $resultService = new ResultService();
+        $result = $resultService->buildEmptyResult($this->roster);
+        $expectedResult = [
+            '1' => 2,
+            '2' => 1,
+        ];
+        $this->assertSame($expectedResult, $resultService->getAllCalculatedShifts($result));
+    }
+
     public function testGetOpenTargetShifts(): void
     {
         $resultService = new ResultService();
