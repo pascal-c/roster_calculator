@@ -267,8 +267,8 @@ class ResultServiceTest extends \Codeception\Test\Unit
         $resultService = new ResultService();
         $result = $resultService->buildEmptyResult($this->roster);
         $expectedResult = [
-            '1' => 2,
-            '2' => 1,
+            ['personId' => '1', 'calculatedShifts' => 2],
+            ['personId' => '2', 'calculatedShifts' => 1],
         ];
         $this->assertSame($expectedResult, $resultService->getAllCalculatedShifts($result));
     }

@@ -102,7 +102,15 @@ class ResultService
 
     public function getAllCalculatedShifts(array $result): array
     {
-        return array_map(fn (array $person): int => $person['calculatedShifts'], $result['people']);
+        $calculatedShifts = [];
+        foreach ($result['people'] as $personId => $personValues) {
+            $calculatedShifts[] = [
+                'personId' => strval($personId),
+                'calculatedShifts' => $personValues['calculatedShifts'],
+            ];
+        }
+
+        return $calculatedShifts;
     }
 
     public function getOpenTargetShifts(array $result, Person $person): int

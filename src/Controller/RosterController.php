@@ -10,7 +10,6 @@ use App\Service\Calculator;
 use App\Service\RosterBuilder;
 use App\Service\TimeService;
 use App\Value\Status;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +19,6 @@ use Symfony\Component\Routing\Attribute\Route;
 class RosterController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
         private RosterRepository $rosterRepository,
         private TimeService $timeService,
         private RosterBuilder $rosterBuilder,
@@ -50,9 +48,6 @@ class RosterController extends AbstractController
         $roster->setResult($this->resultSerializer->serialize($result));
         $roster->setCompletedAt($this->timeService->now());
         $roster->setStatus(Status::COMPLETED->value);
-
-        $this->entityManager->persist($roster);
-        $this->entityManager->flush();
 
         $result = [
             'id' => $roster->getSlug(),
