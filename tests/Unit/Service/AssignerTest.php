@@ -29,7 +29,6 @@ final class AssignerTest extends Unit
     private array $shifts;
     private Shift $shift1;
     private Shift $shift2;
-    private array $people;
     private Person $fernando;
     private Person $thorsten;
 
@@ -41,10 +40,10 @@ final class AssignerTest extends Unit
             $this->shift1 = Stub::make(Shift::class, ['id' => 'shift1', 'timeSlotPeriod' => $timeSlotPeriod, 'assignedPeople' => []]),
             $this->shift2 = Stub::make(Shift::class, ['id' => 'shift2', 'timeSlotPeriod' => $timeSlotPeriod, 'assignedPeople' => []]),
         ];
-        $this->people = [
-            $this->fernando = Stub::make(Person::class, ['id' => 'fernando']),
-            $this->thorsten = Stub::make(Person::class, ['id' => 'thorsten']),
-        ];
+
+        $this->fernando = Stub::make(Person::class, ['id' => 'fernando']);
+        $this->thorsten = Stub::make(Person::class, ['id' => 'thorsten']);
+
         $this->roster = new Roster();
         $this->roster
             ->addPerson($this->fernando)
@@ -75,46 +74,32 @@ final class AssignerTest extends Unit
 
     public function testCalculateAll(): void
     {
-        $firstResultRating = 317;
+        $firstResult = ['rating' => ['total' => 317]];
         $this->rater
-            ->expects($this->exactly(7)) // 3 times for first shift and 2x2 times for second shift
+            ->expects($this->exactly(5)) // 3 times for shift1 and 2 times for shift2
             ->method('calculatePoints')
             ->with($this->anything(), $this->roster)
             ->willReturnCallback(
-                function (array $result, Roster $roster): array {
-                    static $count = 0;
-                    ++$count;
+                function (array $result, Roster $_roster): array {
+                    $shiftAssignments = $this->resultService->getShiftAssignments($result);
+                    if (2 === count($shiftAssignments) && $shiftAssignments['shift1']['addedPeople'] === [$this->fernando]) {
+                        return ['total' => 317];
+                    }
 
-                    return (3 === $count) ? ['total' => 317] : ['total' => 316]; // null for first play date is definetely worse, everything else not
+                    return ['total' => 316];
                 }
             );
 
-        $results = $this->assigner->calculateAll($this->roster, $this->shifts, $firstResultRating);
-        $this->assertSame(4, count($results));
+        $result = $this->assigner->calculateAll($this->roster, $this->shifts, $this->resultService->buildEmptyResult($this->roster), $firstResult);
 
-        $expectedShiftAssignments = [ // Thorsten is not available for playDate 2
-            [
-                'shift1' => ['shift' => $this->shift1, 'addedPeople' => [$this->fernando]],
-                'shift2' => ['shift' => $this->shift2, 'addedPeople' => [$this->fernando]],
-            ],
-            [
-                'shift1' => ['shift' => $this->shift1, 'addedPeople' => [$this->fernando]],
-                'shift2' => ['shift' => $this->shift2, 'addedPeople' => []],
-            ],
-            [
-                'shift1' => ['shift' => $this->shift1, 'addedPeople' => [$this->thorsten]],
-                'shift2' => ['shift' => $this->shift2, 'addedPeople' => [$this->fernando]],
-            ],
-            [
-                'shift1' => ['shift' => $this->shift1, 'addedPeople' => [$this->thorsten]],
-                'shift2' => ['shift' => $this->shift2, 'addedPeople' => []],
-            ],
+        $expectedShiftAssignments = [ // Thorsten is not available for playDate 2, but thorsten is better for shift1
+            'shift1' => ['shift' => $this->shift1, 'addedPeople' => [$this->thorsten]],
+            'shift2' => ['shift' => $this->shift2, 'addedPeople' => [$this->fernando]],
         ];
 
-        $this->assertEquals($expectedShiftAssignments, array_map(fn (array $result): array => $result['shifts'], $results));
-        foreach ($results as $result) {
-            $this->assertSame(316, $result['rating']['total']);
-        }
+        $this->assertEquals($expectedShiftAssignments, $this->resultService->getShiftAssignments($result));
+        $this->assertSame(316, $this->resultService->getTotalPoints($result));
+        $this->assertSame(3, $this->assigner->counter); // one for shift2, one for shift1, one for empty shifts
     }
 
     public function testCalculateFirst(): void

@@ -37,22 +37,20 @@ final class RosterCest
             'status' => 'completed',
         ]);
         $I->seeResponseContainsJson([
-            'result' => [
-                'assignments' => [
-                    ['shiftId' => 'date1 id', 'personIds' => []],
-                    ['shiftId' => 'date2 id', 'personIds' => ['uta']],
-                ],
-                'personalResults' => [
-                    ['personId' => 'uta', 'calculatedShifts' => 2],
-                    ['personId' => 'erwin', 'calculatedShifts' => 1],
-                ],
-                'rating' => [
-                    'notAssigned' => 100, // nobody assigned for date1
-                    'maybeClown' => 1, // uta is only maybe available for date2
-                    'targetPlays' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
-                    'maxPerWeek' => 0,
-                    'total' => 109,
-                ],
+            'assignments' => [
+                ['shiftId' => 'date1 id', 'personIds' => []],
+                ['shiftId' => 'date2 id', 'personIds' => ['uta']],
+            ],
+            'personalResults' => [
+                ['personId' => 'uta', 'calculatedShifts' => 2],
+                ['personId' => 'erwin', 'calculatedShifts' => 1],
+            ],
+            'rating' => [
+                'notAssigned' => 100, // nobody assigned for date1
+                'maybeClown' => 1, // uta is only maybe available for date2
+                'targetPlays' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'maxPerWeek' => 0,
+                'total' => 109,
             ],
         ]);
     }

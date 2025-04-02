@@ -4,16 +4,19 @@ namespace App\Service;
 
 use App\Entity\Person;
 use App\Entity\Roster;
-use App\Entity\Shift;
 
 class Assigner
 {
+    public $counter = 0;
+    private $time = 0;
+
     public function __construct(
         private ResultService $resultService,
         private AvailabilityChecker $availabilityChecker,
         private PeopleSorter $peopleSorter,
         private Rater $rater,
     ) {
+        $this->time = time();
     }
 
     /**
@@ -38,49 +41,40 @@ class Assigner
         return $result;
     }
 
-    public function calculateAll(Roster $roster, array $shifts, int $bestResultTotalPoints): array
+    public function calculateAll(Roster $roster, array $shifts, array $currentResult, array $bestResult): array
     {
+        ++$this->counter;
+        if ($this->isTimedOut()) {
+            return $bestResult;
+        }
+
         if (empty($shifts)) {
-            return [$this->resultService->buildEmptyResult($roster)];
+            return ($this->resultService->getTotalPoints($currentResult) < $this->resultService->getTotalPoints($bestResult))
+                ? $currentResult
+                : $bestResult;
         }
 
         $shift = array_pop($shifts);
 
-        return $this->addShift(
-            $roster,
-            $shift,
-            $bestResultTotalPoints,
-            $this->calculateAll($roster, $shifts, $bestResultTotalPoints),
+        $availablePeople = array_filter(
+            $roster->getPeople(),
+            fn (Person $person): bool => $this->availabilityChecker->isAvailableFor($shift, $person, $currentResult)
         );
-    }
-
-    private function addShift(Roster $roster, Shift $shift, int $bestResultTotalPoints, array $results): array
-    {
-        $newResults = [];
-
-        foreach ($results as $result) {
-            $availablePeople = array_filter(
-                $roster->getPeople(),
-                fn (Person $person): bool => $this->availabilityChecker->isAvailableFor($shift, $person, $result)
-            );
-            foreach ($this->peopleSorter->sortForShift($shift, $availablePeople, $result) as $person) {
-                $newResult = $this->resultService->add($result, $shift, $person);
-                $newResultRating = $this->rater->calculatePoints($newResult, $roster);
-                if ($newResultRating['total'] < $bestResultTotalPoints) {
-                    $this->resultService->setRating($newResult, $newResultRating);
-                    $newResults[] = $newResult;
-                }
-            }
-
-            // try with empty person as well
-            $newResult = $this->resultService->add($result, $shift, null);
+        $availablePeople[] = null;
+        foreach ($this->peopleSorter->sortForShift($shift, $availablePeople, $currentResult) as $person) {
+            $newResult = $this->resultService->add($currentResult, $shift, $person);
             $newResultRating = $this->rater->calculatePoints($newResult, $roster);
-            if ($newResultRating['total'] < $bestResultTotalPoints) {
+            if ($newResultRating['total'] < $this->resultService->getTotalPoints($bestResult)) {
                 $this->resultService->setRating($newResult, $newResultRating);
-                $newResults[] = $newResult;
+                $bestResult = $this->calculateAll($roster, $shifts, $newResult, $bestResult);
             }
         }
 
-        return $newResults;
+        return $bestResult;
+    }
+
+    public function isTimedOut(): bool
+    {
+        return time() - $this->time > 85;
     }
 }

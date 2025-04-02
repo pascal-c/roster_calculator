@@ -24,7 +24,15 @@ class PeopleSorter
     {
         usort(
             $people,
-            function (Person $person1, Person $person2) use ($shift, $result) {
+            function (?Person $person1, ?Person $person2) use ($shift, $result) {
+                // if person ist null it comes last
+                if (is_null($person1)) {
+                    return is_null($person2) ? 0 : 1;
+                }
+                if (is_null($person2)) {
+                    return -1;
+                }
+
                 // when maxShiftsWeek ist reached, the person comes last
                 $person1MaxShiftsWeekReached = $this->maxShiftsReachedChecker->maxShiftsPerWeekReached($shift->timeSlotPeriod->weekId, $person1, $result);
                 $person2MaxShiftsWeekReached = $this->maxShiftsReachedChecker->maxShiftsPerWeekReached($shift->timeSlotPeriod->weekId, $person2, $result);

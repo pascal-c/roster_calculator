@@ -16,15 +16,17 @@ class Calculator
 
     public function calculate(Roster $roster): array
     {
+        set_time_limit(90);
+
         $firstResult = $this->assigner->calculateFirst($roster);
-
-        $results = $this->assigner->calculateAll($roster, $roster->getShifts(), $this->resultService->getTotalPoints($firstResult));
-
-        $bestResult = array_reduce(
-            $results,
-            fn (array $carry, array $element): array => $this->resultService->getTotalPoints($element) < $this->resultService->getTotalPoints($carry) ? $element : $carry,
+        $bestResult = $this->assigner->calculateAll(
+            $roster,
+            array_reverse($roster->getShifts()),
+            $this->resultService->buildEmptyResult($roster),
             $firstResult,
         );
+
+        $this->resultService->setStatistics($bestResult, $this->assigner->isTimedOut(), $this->assigner->counter);
 
         return $bestResult;
     }

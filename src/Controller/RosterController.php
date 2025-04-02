@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Repository\RosterRepository;
 use App\Serializer\ResultSerializer;
 use App\Service\Calculator;
+use App\Service\ResultService;
 use App\Service\RosterBuilder;
 use App\Service\TimeService;
 use App\Value\Status;
@@ -24,6 +25,7 @@ class RosterController extends AbstractController
         private RosterBuilder $rosterBuilder,
         private Calculator $calculator,
         private ResultSerializer $resultSerializer,
+        private ResultService $resultService,
     ) {
     }
 
@@ -45,7 +47,7 @@ class RosterController extends AbstractController
 
         $roster->setStartedAt($this->timeService->now());
         $result = $this->calculator->calculate($roster);
-        $roster->setResult($this->resultSerializer->serialize($result));
+        $roster->setResult($result);
         $roster->setCompletedAt($this->timeService->now());
         $roster->setStatus(Status::COMPLETED->value);
 
@@ -53,7 +55,11 @@ class RosterController extends AbstractController
             'id' => $roster->getSlug(),
             'status' => $roster->getStatus(),
             'created_at' => $roster->getCreatedAt()->format('c'),
-            'result' => $roster->getResult(),
+            'assignments' => $this->resultSerializer->serializeAssignments($result),
+            'personalResults' => $this->resultService->getAllCalculatedShifts($result),
+            'rating' => $this->resultService->getRating($result),
+            'counter' => $this->resultService->getCounter($result),
+            'isTimedOut' => $this->resultService->isTimedOut($result),
         ];
 
         return new JsonResponse($result, Response::HTTP_CREATED, ['location' => $this->generateUrl('show_roster', ['id' => $roster->getSlug()])]);

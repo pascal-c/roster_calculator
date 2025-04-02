@@ -86,59 +86,56 @@ components:
             - completed
         createdAt:
           type: string
-          format: date
-        result:
+          format: date-time
+        assignments:
+          type: array
+          items:
+            type: object
+            required:
+              - shiftId
+              - personIds
+            properties:
+              shiftId:
+                type: string
+              personIds:
+                type: array
+                items:
+                  type: string
+        personalResults:
+          type: array
+          items:
+            type: object
+            required:
+              - personId
+              - calculatedShifts
+            properties:
+              personId:
+                type: string
+              calculatedShifts:
+                type: integer
+        rating:
           type: object
           required:
-            - assignments
-            - personalResults
-            - rating
+            - notAssigned
+            - maybeClown
+            - targetPlays
+            - maxPerWeek
+            - total
           properties:
-            assignments:
-              type: array
-              items:
-                type: object
-                required:
-                  - shiftId
-                  - personIds
-                properties:
-                  shiftId:
-                    type: string
-                  personIds:
-                    type: array
-                    items:
-                      type: string
-            personalResults:
-              type: array
-              items:
-                type: object
-                required:
-                  - personId
-                  - calculatedShifts
-                properties:
-                  personId:
-                    type: string
-                  calculatedShifts:
-                    type: integer
-            rating:
-              type: object
-              required:
-                - notAssigned
-                - maybeClown
-                - targetPlays
-                - maxPerWeek
-                - total
-              properties:
-                notAssigned:
-                  type: integer
-                maybeClown:
-                  type: integer
-                targetPlays:
-                  type: integer
-                maxPerWeek:
-                  type: integer
-                total:
-                  type: integer
+            notAssigned:
+              type: integer
+            maybeClown:
+              type: integer
+            targetPlays:
+              type: integer
+            maxPerWeek:
+              type: integer
+            total:
+              type: integer
+        counter:
+          type: integer
+        isTimeout:
+          type: boolean
     Shift:
       type: object
       required:

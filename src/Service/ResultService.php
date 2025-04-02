@@ -139,4 +139,20 @@ class ResultService
     {
         return $result['rating']['total'];
     }
+
+    public function setStatistics(array &$result, bool $isTimedOut, int $counter): void
+    {
+        $result['isTimedOut'] = $isTimedOut;
+        $result['counter'] = $counter;
+    }
+
+    public function isTimedOut(array &$result): bool
+    {
+        return $result['isTimedOut'] ?? false;
+    }
+
+    public function getCounter(array &$result): int
+    {
+        return $result['counter'] ?? 0;
+    }
 }

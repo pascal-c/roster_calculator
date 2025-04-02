@@ -40,7 +40,7 @@ final class PeopleSorterTest extends Unit
             'id' => 'p2',
             'getAvailabilityOn' => $availability2,
         ]);
-        $people = [$person1, $person2];
+        $people = [$person1, null, $person2];
         $result = ['huhu' => 'haha'];
 
         $maxShiftsReachedChecker = Stub::make(MaxShiftsReachedChecker::class, [
@@ -67,9 +67,9 @@ final class PeopleSorterTest extends Unit
 
         $result = $sorter->sortForShift($shift, $people, $result);
         if (self::PERSON1_FIRST === $expectedFirstPerson) {
-            $this->assertEquals([$person1, $person2], $result);
+            $this->assertEquals([$person1, $person2, null], $result);
         } else {
-            $this->assertEquals([$person2, $person1], $result);
+            $this->assertEquals([$person2, $person1, null], $result);
         }
     }
 
