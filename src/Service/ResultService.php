@@ -140,10 +140,11 @@ class ResultService
         return $result['rating']['total'];
     }
 
-    public function setStatistics(array &$result, bool $isTimedOut, int $counter): void
+    public function setStatistics(array &$result, bool $isTimedOut, int $counter, int $firstResultTotalPoints): void
     {
         $result['isTimedOut'] = $isTimedOut;
         $result['counter'] = $counter;
+        $result['firstResultTotalPoints'] = $firstResultTotalPoints;
     }
 
     public function isTimedOut(array &$result): bool
@@ -154,5 +155,10 @@ class ResultService
     public function getCounter(array &$result): int
     {
         return $result['counter'] ?? 0;
+    }
+
+    public function getFirstResultTotalPoints(array &$result): int
+    {
+        return $result['firstResultTotalPoints'] ?? 0;
     }
 }

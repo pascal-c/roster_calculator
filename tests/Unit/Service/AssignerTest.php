@@ -76,7 +76,7 @@ final class AssignerTest extends Unit
     {
         $firstResult = ['rating' => ['total' => 317]];
         $this->rater
-            ->expects($this->exactly(5)) // 3 times for shift1 and 2 times for shift2
+            ->expects($this->exactly(4))
             ->method('calculatePoints')
             ->with($this->anything(), $this->roster)
             ->willReturnCallback(
@@ -99,7 +99,7 @@ final class AssignerTest extends Unit
 
         $this->assertEquals($expectedShiftAssignments, $this->resultService->getShiftAssignments($result));
         $this->assertSame(316, $this->resultService->getTotalPoints($result));
-        $this->assertSame(3, $this->assigner->counter); // one for shift2, one for shift1, one for empty shifts
+        $this->assertSame(2, $this->assigner->counter); // one for shift2, one for shift1
     }
 
     public function testCalculateFirst(): void

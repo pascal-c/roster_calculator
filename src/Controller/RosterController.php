@@ -60,6 +60,7 @@ class RosterController extends AbstractController
             'rating' => $this->resultService->getRating($result),
             'counter' => $this->resultService->getCounter($result),
             'isTimedOut' => $this->resultService->isTimedOut($result),
+            'firstResultTotalPoints' => $this->resultService->getFirstResultTotalPoints($result),
         ];
 
         return new JsonResponse($result, Response::HTTP_CREATED, ['location' => $this->generateUrl('show_roster', ['id' => $roster->getSlug()])]);

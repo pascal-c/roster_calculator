@@ -26,7 +26,7 @@ class Calculator
             $firstResult,
         );
 
-        $this->resultService->setStatistics($bestResult, $this->assigner->isTimedOut(), $this->assigner->counter);
+        $this->resultService->setStatistics($bestResult, $this->assigner->isTimedOut(), $this->assigner->counter, $this->resultService->getTotalPoints($firstResult));
 
         return $bestResult;
     }

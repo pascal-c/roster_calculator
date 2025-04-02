@@ -48,12 +48,6 @@ class Assigner
             return $bestResult;
         }
 
-        if (empty($shifts)) {
-            return ($this->resultService->getTotalPoints($currentResult) < $this->resultService->getTotalPoints($bestResult))
-                ? $currentResult
-                : $bestResult;
-        }
-
         $shift = array_pop($shifts);
 
         $availablePeople = array_filter(
@@ -66,6 +60,9 @@ class Assigner
             $newResultRating = $this->rater->calculatePoints($newResult, $roster);
             if ($newResultRating['total'] < $this->resultService->getTotalPoints($bestResult)) {
                 $this->resultService->setRating($newResult, $newResultRating);
+                if (empty($shifts)) {
+                    return $newResult;
+                }
                 $bestResult = $this->calculateAll($roster, $shifts, $newResult, $bestResult);
             }
         }
