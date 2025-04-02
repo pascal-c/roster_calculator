@@ -21,7 +21,7 @@ class RosterBuilder
     {
     }
 
-    public function __invoke(array $payload): Roster
+    public function buildNew(array $payload): Roster
     {
         $roster = new Roster();
         $roster->setSlug(Uuid::uuid4()->toString());
@@ -29,10 +29,14 @@ class RosterBuilder
         $roster->setPreconditions($payload);
         $roster->setCreatedAt($this->timeService->now());
 
-        foreach ($payload['locations'] as $locationPayload) {
-            $location = new Location($locationPayload['id']);
-            $roster->addLocation($location);
-        }
+        $this->buildFromRoster($roster);
+
+        return $roster;
+    }
+
+    public function buildFromRoster(Roster $roster): void
+    {
+        $payload = $roster->getPreconditions();
 
         foreach ($payload['people'] as $personPayload) {
             $person = new Person(
@@ -58,6 +62,15 @@ class RosterBuilder
             $roster->addPerson($person);
         }
 
+        foreach ($payload['locations'] as $locationPayload) {
+            $blockedPeople = array_map(
+                fn (string $personId): Person => $roster->getPerson($personId),
+                $locationPayload['blockedPeople'] ?? [],
+            );
+            $location = new Location($locationPayload['id'], $blockedPeople);
+            $roster->addLocation($location);
+        }
+
         foreach ($payload['shifts'] as $shiftPayload) {
             $assignedPeople = array_map(
                 fn (string $id): Person => $roster->getPerson($id),
@@ -74,7 +87,5 @@ class RosterBuilder
             );
             $roster->addShift($shift);
         }
-
-        return $roster;
     }
 }

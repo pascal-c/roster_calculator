@@ -37,6 +37,12 @@ class Roster
     private array $shifts = [];
     private array $people = [];
 
+    private int $shiftCount = 0;
+    private array $weekIds = [];
+
+    #[ORM\Column(nullable: true)]
+    private ?array $result = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -126,9 +132,18 @@ class Roster
         return $this->people[$id];
     }
 
+    public function getPeople(): array
+    {
+        return $this->people;
+    }
+
     public function addShift(Shift $shift): static
     {
         $this->shifts[] = $shift;
+        ++$this->shiftCount;
+        if (!in_array($shift->timeSlotPeriod->weekId, $this->weekIds)) {
+            $this->weekIds[] = $shift->timeSlotPeriod->weekId;
+        }
 
         return $this;
     }
@@ -136,6 +151,16 @@ class Roster
     public function getShifts(): array
     {
         return $this->shifts;
+    }
+
+    public function countShifts(): int
+    {
+        return $this->shiftCount;
+    }
+
+    public function getWeekIds(): array
+    {
+        return $this->weekIds;
     }
 
     public function addLocation(Location $location): static
@@ -152,5 +177,17 @@ class Roster
         }
 
         return $this->locations[$id];
+    }
+
+    public function getResult(): ?array
+    {
+        return $this->result;
+    }
+
+    public function setResult(?array $result): static
+    {
+        $this->result = $result;
+
+        return $this;
     }
 }

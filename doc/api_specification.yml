@@ -84,10 +84,58 @@ components:
             - not_started
             - in_progress
             - completed
-        shifts:
+        createdAt:
+          type: string
+          format: date-time
+        assignments:
           type: array
           items:
-            $ref: '#/components/schemas/Shift'
+            type: object
+            required:
+              - shiftId
+              - personIds
+            properties:
+              shiftId:
+                type: string
+              personIds:
+                type: array
+                items:
+                  type: string
+        personalResults:
+          type: array
+          items:
+            type: object
+            required:
+              - personId
+              - calculatedShifts
+            properties:
+              personId:
+                type: string
+              calculatedShifts:
+                type: integer
+        rating:
+          type: object
+          required:
+            - notAssigned
+            - maybeClown
+            - targetPlays
+            - maxPerWeek
+            - total
+          properties:
+            notAssigned:
+              type: integer
+            maybeClown:
+              type: integer
+            targetPlays:
+              type: integer
+            maxPerWeek:
+              type: integer
+            total:
+              type: integer
+        counter:
+          type: integer
+        isTimeout:
+          type: boolean
     Shift:
       type: object
       required:
@@ -177,3 +225,7 @@ components:
       properties:
         id:
           type: string
+        blockedPeopleIds:
+          type: array
+          items:
+            type: string

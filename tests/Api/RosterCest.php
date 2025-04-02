@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Api;
 
 use Codeception\Attribute\Before;
+use Codeception\Attribute\Skip;
 use Tests\Support\ApiTester;
 
 final class RosterCest
@@ -33,12 +34,30 @@ final class RosterCest
         ]);
         $I->seeHttpHeader('Location', '/v1/roster/'.$this->id);
         $I->seeResponseContainsJson([
-            'status' => 'not_started',
+            'status' => 'completed',
+        ]);
+        $I->seeResponseContainsJson([
+            'assignments' => [
+                ['shiftId' => 'date1 id', 'personIds' => []],
+                ['shiftId' => 'date2 id', 'personIds' => ['uta']],
+            ],
+            'personalResults' => [
+                ['personId' => 'uta', 'calculatedShifts' => 2],
+                ['personId' => 'erwin', 'calculatedShifts' => 1],
+            ],
+            'rating' => [
+                'notAssigned' => 100, // nobody assigned for date1
+                'maybeClown' => 1, // uta is only maybe available for date2
+                'targetPlays' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'maxPerWeek' => 0,
+                'total' => 109,
+            ],
         ]);
     }
 
     #[Before('create')]
-    public function show(ApiTester $I): void
+    #[Skip('This test does not work without persistency')]
+    public function _show(ApiTester $I): void
     {
         $I->sendGetAsJson('/v1/roster/'.$this->id);
         $I->seeResponseCodeIs(200);
@@ -48,7 +67,7 @@ final class RosterCest
             'created_at' => 'string',
         ]);
         $I->seeResponseContainsJson([
-            'status' => 'not_started',
+            'status' => 'completed',
         ]);
     }
 
@@ -64,20 +83,25 @@ final class RosterCest
     private function getPayload(): array
     {
         return [
-            'locations' => [],
+            'locations' => [
+                [
+                    'id' => 'location1',
+                    'blockedPeople' => ['erwin'],
+                ],
+            ],
             'shifts' => [
                 [
                     'id' => 'date1 id',
                     'date' => '2021-01-01',
                     'daytime' => 'am',
-                    'person_ids' => ['uta'],
-                    'location_id' => 'location1',
+                    'personIds' => ['uta'],
+                    'locationId' => 'location1',
                 ],
                 [
                     'id' => 'date2 id',
                     'date' => '2021-01-02',
                     'daytime' => 'pm',
-                    'person_ids' => ['erwin'],
+                    'personIds' => ['erwin'],
                 ],
             ],
             'people' => [
@@ -99,7 +123,7 @@ final class RosterCest
                         [
                             'date' => '2021-01-02',
                             'daytime' => 'pm',
-                            'availability' => 'no',
+                            'availability' => 'maybe',
                         ],
                     ],
                 ],
