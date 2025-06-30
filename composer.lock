@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "985274e1a9a76ee8700f8d82cde62f76",
+    "content-hash": "4f72ee4eda1bb1e1e9150ee8c2299652",
     "packages": [
         {
             "name": "brick/math",
@@ -3929,16 +3929,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v7.2.8",
+            "version": "v7.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "262cbc0765a2fa4793efbdad500236dda66106b1"
+                "reference": "0c3555045a46ab3cd4cc5a69d161225195230edb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/262cbc0765a2fa4793efbdad500236dda66106b1",
-                "reference": "262cbc0765a2fa4793efbdad500236dda66106b1",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/0c3555045a46ab3cd4cc5a69d161225195230edb",
+                "reference": "0c3555045a46ab3cd4cc5a69d161225195230edb",
                 "shasum": ""
             },
             "require": {
@@ -3981,7 +3981,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v7.2.8"
+                "source": "https://github.com/symfony/yaml/tree/v7.3.1"
             },
             "funding": [
                 {
@@ -3997,7 +3997,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-06-03T06:57:06+00:00"
+            "time": "2025-06-03T06:57:57+00:00"
         }
     ],
     "packages-dev": [
@@ -8858,5 +8858,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
