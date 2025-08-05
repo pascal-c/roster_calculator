@@ -10,7 +10,7 @@
         "doctrine/dbal": "^4.2",
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4",
-        "doctrine/orm": "^3.3",
+        "doctrine/orm": "^3.5",
         "ramsey/uuid": "^4.7",
         "symfony/console": "^7.3",
         "symfony/dotenv": "^7.2",
