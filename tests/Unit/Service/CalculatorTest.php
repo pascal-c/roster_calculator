@@ -6,8 +6,9 @@ namespace Tests\Unit\Service;
 
 use App\Entity\Roster;
 use App\Entity\Shift;
-use App\Service\Assigner;
 use App\Service\Calculator;
+use App\Service\Calculator\BackTrackingCalculator;
+use App\Service\Calculator\SimpleCalculator;
 use App\Service\ResultService;
 use App\Value\Time\TimeSlotPeriod;
 use Codeception\Stub;
@@ -17,7 +18,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 final class CalculatorTest extends Unit
 {
     private Calculator $calculator;
-    private Assigner&MockObject $assigner;
+    private BackTrackingCalculator&MockObject $backTrackingCalculator;
+    private SimpleCalculator&MockObject $simpleCalculator;
     private ResultService&MockObject $resultService;
     private array $firstResult = ['firstResult'];
     private array $bestResult = ['bestResult'];
@@ -32,11 +34,13 @@ final class CalculatorTest extends Unit
         $this->roster->addShift($shift2 = Stub::make(Shift::class, ['id' => 'shift2', 'timeSlotPeriod' => $timeSlotPeriod]));
 
         // services
-        $this->assigner = $this->createMock(Assigner::class);
+        $this->simpleCalculator = $this->createMock(SimpleCalculator::class);
+        $this->backTrackingCalculator = $this->createMock(BackTrackingCalculator::class);
         $this->resultService = $this->createMock(ResultService::class);
 
         $this->calculator = new Calculator(
-            $this->assigner,
+            $this->simpleCalculator,
+            $this->backTrackingCalculator,
             $this->resultService,
         );
 
@@ -44,12 +48,12 @@ final class CalculatorTest extends Unit
             ->method('buildEmptyResult')
             ->with($this->roster)
             ->willReturn($this->emptyResult);
-        $this->assigner
-            ->method('calculateFirst')
+        $this->simpleCalculator
+            ->method('calculate')
             ->with($this->roster)
             ->willReturn($this->firstResult);
-        $this->assigner
-            ->method('calculateAll')
+        $this->backTrackingCalculator
+            ->method('calculate')
             ->with($this->roster, [$shift2, $shift1], $this->emptyResult, $this->firstResult)
             ->willReturn($this->bestResult);
     }

@@ -74,6 +74,13 @@ class ResultService
         return $result['shifts'][$shift->id]['addedPeople'] ?? [];
     }
 
+    public function getLastAddedPerson(array $result, Shift $shift): ?Person
+    {
+        $addedPeople = $this->getAddedPeople($result, $shift);
+
+        return empty($addedPeople) ? null : $addedPeople[array_key_last($addedPeople)];
+    }
+
     public function countShiftsPerDay(array $result, Person $person, string $dateIndex): int
     {
         $timeSlotsByDay = $result['people'][$person->id]['timeSlots'][$dateIndex] ?? [];
