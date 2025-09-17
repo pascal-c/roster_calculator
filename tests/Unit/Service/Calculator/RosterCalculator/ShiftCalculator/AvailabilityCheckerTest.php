@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Location;
 use App\Entity\Person;
 use App\Entity\Shift;
-use App\Service\AvailabilityChecker;
-use App\Service\MaxShiftsReachedChecker;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker\MaxShiftsReachedChecker;
 use App\Service\ResultService;
 use App\Value\Gender;
 use App\Value\Time\TimeSlotPeriod;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker;
 
 use App\Entity\Person;
-use App\Service\MaxShiftsReachedChecker;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker\MaxShiftsReachedChecker;
 use App\Service\ResultService;
 use Codeception\Attribute\DataProvider;
 use Codeception\Test\Unit;

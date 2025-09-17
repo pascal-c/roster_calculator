@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Roster;
+use App\Service\Calculator\BackTrackingCalculator;
+use App\Service\Calculator\SimpleCalculator;
 
 class Calculator
 {
     public function __construct(
-        private Assigner $assigner,
+        private SimpleCalculator $simpleCalculator,
+        private BackTrackingCalculator $backTrackingCalculator,
         private ResultService $resultService,
     ) {
     }
@@ -18,15 +21,15 @@ class Calculator
     {
         set_time_limit(90);
 
-        $firstResult = $this->assigner->calculateFirst($roster);
-        $bestResult = $this->assigner->calculateAll(
+        $firstResult = $this->simpleCalculator->calculate($roster);
+        $bestResult = $this->backTrackingCalculator->calculate(
             $roster,
             array_reverse($roster->getShifts()),
             $this->resultService->buildEmptyResult($roster),
             $firstResult,
         );
 
-        $this->resultService->setStatistics($bestResult, $this->assigner->isTimedOut(), $this->assigner->counter, $this->resultService->getTotalPoints($firstResult));
+        $this->resultService->setStatistics($bestResult, $this->backTrackingCalculator->isTimedOut(), $this->backTrackingCalculator->counter, $this->resultService->getTotalPoints($firstResult));
 
         return $bestResult;
     }
