@@ -9,6 +9,7 @@ use App\Entity\Shift;
 use App\Service\Calculator\BackTrackingCalculator;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator;
 use App\Service\ResultService;
+use App\Service\TimeService;
 use App\Value\Time\TimeSlotPeriod;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,6 +19,7 @@ final class BackTrackingCalculaotorTest extends Unit
     private BackTrackingCalculator $backTrackingCalculator;
     private ResultService&MockObject $resultService;
     private ShiftCalculator&MockObject $shiftCalculator;
+    private TimeService&MockObject $timeService;
 
     private Roster $roster;
     private Shift $shift1;
@@ -37,15 +39,19 @@ final class BackTrackingCalculaotorTest extends Unit
         // services
         $this->resultService = $this->createMock(ResultService::class);
         $this->shiftCalculator = $this->createMock(ShiftCalculator::class);
-
-        $this->backTrackingCalculator = new BackTrackingCalculator(
-            $this->resultService,
-            $this->shiftCalculator,
-        );
+        $this->timeService = $this->createMock(TimeService::class);
     }
 
     public function testCalculate(): void
     {
+        $this->timeService
+            ->method('unixTimestamp')
+            ->willReturnOnConsecutiveCalls(100, 185, 185, 185, 185); // first call is start time, then no timeout
+        $this->backTrackingCalculator = new BackTrackingCalculator(
+            $this->resultService,
+            $this->shiftCalculator,
+            $this->timeService,
+        );
         $this->resultService
             ->expects($this->exactly(8))
             ->method('getTotalPoints')
@@ -68,5 +74,31 @@ final class BackTrackingCalculaotorTest extends Unit
         $result = $this->backTrackingCalculator->calculate($this->roster, [$this->shift2, $this->shift1], ['currentResult'], ['bestResult']);
 
         $this->assertSame(['result1.1'], $result);
+        $this->assertFalse($this->backTrackingCalculator->isTimedOut());
+        $this->assertSame(3, $this->backTrackingCalculator->counter);
+    }
+
+    public function testCalculateWithTimeout(): void
+    {
+        $this->timeService
+            ->method('unixTimestamp')
+            ->willReturnOnConsecutiveCalls(100, 186, 186); // first call is start time this will trigger the timeout
+        $this->backTrackingCalculator = new BackTrackingCalculator(
+            $this->resultService,
+            $this->shiftCalculator,
+            $this->timeService,
+        );
+        $this->resultService
+            ->expects($this->never())
+            ->method($this->anything());
+        $this->shiftCalculator
+            ->expects($this->never())
+            ->method($this->anything());
+
+        $result = $this->backTrackingCalculator->calculate($this->roster, [$this->shift2, $this->shift1], ['currentResult'], ['bestResult']);
+
+        $this->assertSame(['bestResult'], $result);
+        $this->assertTrue($this->backTrackingCalculator->isTimedOut());
+        $this->assertSame(1, $this->backTrackingCalculator->counter);
     }
 }

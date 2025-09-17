@@ -190,7 +190,7 @@ class ResultServiceTest extends \Codeception\Test\Unit
         $this->assertSame($expectedResult, $newResult);
     }
 
-    public function testGetRating(): void
+    public function testSetAndGetRating(): void
     {
         $result = $this->resultService->buildEmptyResult($this->roster);
         $this->assertSame([], $this->resultService->getRating($result));
@@ -232,6 +232,18 @@ class ResultServiceTest extends \Codeception\Test\Unit
         $this->assertEquals([], $addedPeople1);
         $this->assertEquals([$this->person1], $addedPeople2);
         $this->assertEquals([$this->person1, $this->person2], $addedPeople3);
+    }
+
+    public function testGetLastAddedPerson(): void
+    {
+        $shift3 = $this->roster->getShifts()[2];
+        $result1 = $this->resultService->buildEmptyResult($this->roster);
+        $result2 = $this->resultService->add($result1, $shift3, $this->person1);
+        $result3 = $this->resultService->add($result2, $shift3, $this->person2);
+
+        $this->assertNull($this->resultService->getLastAddedPerson($result1, $shift3));
+        $this->assertSame($this->person1, $this->resultService->getLastAddedPerson($result2, $shift3));
+        $this->assertSame($this->person2, $this->resultService->getLastAddedPerson($result3, $shift3));
     }
 
     public function testCountShiftsPerDay(): void

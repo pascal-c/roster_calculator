@@ -10,4 +10,9 @@ class TimeService
     {
         return new \DateTimeImmutable();
     }
+
+    public function unixTimestamp(): int
+    {
+        return $this->now()->getTimestamp();
+    }
 }

@@ -5,17 +5,19 @@ namespace App\Service\Calculator;
 use App\Entity\Roster;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator;
 use App\Service\ResultService;
+use App\Service\TimeService;
 
 class BackTrackingCalculator
 {
-    public $counter = 0;
-    private $time = 0;
+    public int $counter = 0;
+    private int $time;
 
     public function __construct(
         private ResultService $resultService,
         private ShiftCalculator $shiftCalculator,
+        private TimeService $timeService,
     ) {
-        $this->time = time();
+        $this->time = $this->timeService->unixTimestamp();
     }
 
     public function calculate(Roster $roster, array $shifts, array $currentResult, array $bestResult): array
@@ -34,9 +36,7 @@ class BackTrackingCalculator
                     return $newResult;
                 }
                 $bestResult = $this->calculate($roster, $shifts, $newResult, $bestResult);
-            }
-
-            if (empty($shifts)) {
+            } elseif (empty($shifts)) {
                 return $bestResult;
             }
         }
@@ -46,6 +46,6 @@ class BackTrackingCalculator
 
     public function isTimedOut(): bool
     {
-        return time() - $this->time > 85;
+        return $this->timeService->unixTimestamp() - $this->time > 85;
     }
 }
