@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Availability;
 use App\Entity\Person;
 use App\Entity\Roster;
 use App\Entity\Shift;
+use App\Service\ResultService;
 
 /**
  * rate a result to be able to compare results

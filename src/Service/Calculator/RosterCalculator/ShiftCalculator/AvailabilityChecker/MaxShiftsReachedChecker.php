@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker;
 
 use App\Entity\Person;
+use App\Service\ResultService;
 
 class MaxShiftsReachedChecker
 {

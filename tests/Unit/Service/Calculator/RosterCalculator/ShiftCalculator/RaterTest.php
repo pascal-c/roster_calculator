@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Availability;
 use App\Entity\Person;
 use App\Entity\Roster;
 use App\Entity\Shift;
-use App\Service\Rater;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\Rater;
 use App\Service\ResultService;
 use App\Value\Time\TimeSlotPeriod;
 use Codeception\Attribute\DataProvider;

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Service\ice\Calculator\RosterCalculator;
 
 use App\Entity\Person;
 use App\Entity\Roster;
 use App\Entity\Shift;
-use App\Service\AvailabilityChecker;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator;
-use App\Service\Rater;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\Rater;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\ResultSorter;
 use App\Service\ResultService;
-use App\Service\ResultSorter;
 use App\Value\Time\TimeSlotPeriod;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;

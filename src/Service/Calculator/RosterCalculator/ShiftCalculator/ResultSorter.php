@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Shift;
+use App\Service\ResultService;
 
 class ResultSorter
 {

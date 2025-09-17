@@ -5,10 +5,10 @@ namespace App\Service\Calculator\RosterCalculator;
 use App\Entity\Person;
 use App\Entity\Roster;
 use App\Entity\Shift;
-use App\Service\AvailabilityChecker;
-use App\Service\Rater;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\Rater;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\ResultSorter;
 use App\Service\ResultService;
-use App\Service\ResultSorter;
 
 class ShiftCalculator
 {

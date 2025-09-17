@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Service;
+namespace Tests\Unit\Service\Calculator;
 
 use App\Entity\Roster;
 use App\Entity\Shift;

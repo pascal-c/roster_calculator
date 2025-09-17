@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Location;
 use App\Entity\Person;
 use App\Entity\Shift;
+use App\Service\Calculator\RosterCalculator\ShiftCalculator\AvailabilityChecker\MaxShiftsReachedChecker;
+use App\Service\ResultService;
 use App\Value\Time\TimeSlotPeriod;
 
 class AvailabilityChecker
