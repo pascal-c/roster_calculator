@@ -46,9 +46,9 @@ final class RosterCest
                 ['personId' => 'erwin', 'calculatedShifts' => 1],
             ],
             'rating' => [
-                'notAssigned' => 100, // nobody assigned for date1
-                'maybeClown' => 1, // uta is only maybe available for date2
-                'targetPlays' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'missingPerson' => 100, // nobody assigned for date1
+                'maybePerson' => 1, // uta is only maybe available for date2
+                'targetShifts' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
                 'maxPerWeek' => 0,
                 'total' => 109,
             ],
@@ -80,9 +80,9 @@ final class RosterCest
                 ['personId' => 'erwin', 'calculatedShifts' => 1],
             ],
             'rating' => [
-                'notAssigned' => 1000, // nobody assigned for date1
-                'maybeClown' => 10, // uta is only maybe available for date2
-                'targetPlays' => 80, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'missingPerson' => 1000, // nobody assigned for date1
+                'maybePerson' => 10, // uta is only maybe available for date2
+                'targetShifts' => 80, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
                 'maxPerWeek' => 0,
                 'total' => 1090,
             ],
@@ -191,7 +191,7 @@ final class RosterCest
     private function getPayloadWithIndividualRating(): array
     {
         $payload = $this->getPayload();
-        $payload['rating'] = [
+        $payload['ratingPointWeightings'] = [
             'pointsPerMissingPerson' => 1000,
             'pointsPerMaxPerWeekExceeded' => 100,
             'pointsPerMaybePerson' => 10,
