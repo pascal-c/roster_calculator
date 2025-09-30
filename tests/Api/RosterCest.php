@@ -55,6 +55,40 @@ final class RosterCest
         ]);
     }
 
+    public function createWithIndividualRating(ApiTester $I): void
+    {
+        $response = $I->sendPostAsJson('/v1/roster', $this->getPayloadWithIndividualRating());
+        $this->id = $response['id'];
+
+        $I->seeResponseCodeIs(201);
+        $I->seeResponseMatchesJsonType([
+            'id' => 'string',
+            'status' => 'string',
+            'created_at' => 'string',
+        ]);
+        $I->seeHttpHeader('Location', '/v1/roster/'.$this->id);
+        $I->seeResponseContainsJson([
+            'status' => 'completed',
+        ]);
+        $I->seeResponseContainsJson([
+            'assignments' => [
+                ['shiftId' => 'date1 id', 'personIds' => []],
+                ['shiftId' => 'date2 id', 'personIds' => ['uta']],
+            ],
+            'personalResults' => [
+                ['personId' => 'uta', 'calculatedShifts' => 2],
+                ['personId' => 'erwin', 'calculatedShifts' => 1],
+            ],
+            'rating' => [
+                'notAssigned' => 1000, // nobody assigned for date1
+                'maybeClown' => 10, // uta is only maybe available for date2
+                'targetPlays' => 80, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'maxPerWeek' => 0,
+                'total' => 1090,
+            ],
+        ]);
+    }
+
     #[Before('create')]
     #[Skip('This test does not work without persistency')]
     public function _show(ApiTester $I): void
@@ -152,5 +186,18 @@ final class RosterCest
                 ],
             ],
         ];
+    }
+
+    private function getPayloadWithIndividualRating(): array
+    {
+        $payload = $this->getPayload();
+        $payload['rating'] = [
+            'pointsPerMissingPerson' => 1000,
+            'pointsPerMaxPerWeekExceeded' => 100,
+            'pointsPerMaybePerson' => 10,
+            'pointsPerTargetShiftsMissed' => 20,
+        ];
+
+        return $payload;
     }
 }

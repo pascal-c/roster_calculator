@@ -70,6 +70,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Person'
+        rating:
+          $ref: '#/components/schemas/Rating'
     Roster:
       type: object
       required:
@@ -229,3 +231,27 @@ components:
           type: array
           items:
             type: string
+    Rating:
+      type: object
+      required:
+        - pointsPerMissingPerson
+        - pointsPerMaxPerWeekExceeded
+        - pointsPerMaybePerson
+        - pointsPerTargetShiftsMissed
+      properties:
+        pointsPerMissingPerson:
+          type: integer
+          minimum: 0
+          maximum: 1000
+        pointsPerMaxPerWeekExceeded:
+          type: integer
+          minimum: 0
+          maximum: 1000
+        pointsPerMaybePerson:
+          type: integer
+          minimum: 0
+          maximum: 1000
+        pointsPerTargetShiftsMissed:
+          type: integer
+          minimum: 0
+          maximum: 1000

@@ -4,6 +4,7 @@ namespace Tests\Unit\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Availability;
 use App\Entity\Person;
+use App\Entity\Rating;
 use App\Entity\Roster;
 use App\Entity\Shift;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator\Rater;
@@ -43,6 +44,7 @@ class RaterTest extends Unit
         $this->roster->addShift($this->shift1);
         $this->roster->addShift($this->shift2);
         $this->roster->addShift($this->shift3);
+        $this->roster->setRating(new Rating());
     }
 
     #[DataProvider('dataProvider')]
