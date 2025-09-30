@@ -27,9 +27,9 @@ class Rater
     public function calculatePoints(array $result, Roster $roster): array
     {
         $points = [
-            'notAssigned' => 0,
-            'maybeClown' => 0,
-            'targetPlays' => 0,
+            'missingPerson' => 0,
+            'maybePerson' => 0,
+            'targetShifts' => 0,
             'maxPerWeek' => 0,
         ];
 
@@ -37,12 +37,12 @@ class Rater
         foreach ($shiftAssignments as $shiftAssignment) {
             $shift = $shiftAssignment['shift'];
             $allAssignedPeople = array_merge($shiftAssignment['addedPeople'], $shift->assignedPeople);
-            $points['notAssigned'] += $this->pointsForMissingPerson($allAssignedPeople, $roster);
-            $points['maybeClown'] += $this->pointsForMaybePerson($shift, $allAssignedPeople, $roster);
+            $points['missingPerson'] += $this->pointsForMissingPerson($allAssignedPeople, $roster);
+            $points['maybePerson'] += $this->pointsForMaybePerson($shift, $allAssignedPeople, $roster);
         }
 
         foreach ($roster->getPeople() as $person) {
-            $points['targetPlays'] += $this->pointsForTargetShiftsMissed($person, $result, $roster);
+            $points['targetShifts'] += $this->pointsForTargetShiftsMissed($person, $result, $roster);
             $points['maxPerWeek'] += $this->pointsForMaxPerWeekExceeded($person, $result, $roster);
         }
 

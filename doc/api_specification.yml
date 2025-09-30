@@ -51,12 +51,12 @@ paths:
           description: Invalid id supplied
   /rating:
     post:
-      summary: calculate rating for given roster
+      summary: calculate rating for given preconditions
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Roster'
+              $ref: '#/components/schemas/Preconditions'
         required: true
       responses:
         '201':
@@ -134,24 +134,7 @@ components:
               calculatedShifts:
                 type: integer
         rating:
-          type: object
-          required:
-            - notAssigned
-            - maybeClown
-            - targetPlays
-            - maxPerWeek
-            - total
-          properties:
-            notAssigned:
-              type: integer
-            maybeClown:
-              type: integer
-            targetPlays:
-              type: integer
-            maxPerWeek:
-              type: integer
-            total:
-              type: integer
+          $ref: '#/components/schemas/Rating'
         counter:
           type: integer
         isTimeout:
@@ -273,3 +256,22 @@ components:
           type: integer
           minimum: 0
           maximum: 1000
+    Rating:
+      type: object
+      required:
+        - missingPerson
+        - maybePerson
+        - targetShifts
+        - maxPerWeek
+        - total
+      properties:
+        missingPerson:
+          type: integer
+        maybePerson:
+          type: integer
+        targetShifts:
+          type: integer
+        maxPerWeek:
+          type: integer
+        total:
+          type: integer

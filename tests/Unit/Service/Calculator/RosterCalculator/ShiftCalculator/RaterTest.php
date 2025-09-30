@@ -82,9 +82,9 @@ class RaterTest extends Unit
         $points = $this->rater->calculatePoints($result, $this->roster);
 
         $expectedPoints = [
-            'notAssigned' => 200,
-            'maybeClown' => 2,
-            'targetPlays' => $expectedTargetPlayPoints,
+            'missingPerson' => 200,
+            'maybePerson' => 2,
+            'targetShifts' => $expectedTargetPlayPoints,
             'maxPerWeek' => 20,
             'total' => 222 + $expectedTargetPlayPoints,
         ];
