@@ -49,6 +49,24 @@ paths:
                   $ref: '#/components/schemas/Roster'
         '404':
           description: Invalid id supplied
+  /rating:
+    post:
+      summary: calculate rating for given roster
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roster'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        '422':
+          description: Validation exception
 components:
   schemas:
     Preconditions:
@@ -70,8 +88,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Person'
-        rating:
-          $ref: '#/components/schemas/Rating'
+        ratingPointWeightings:
+          $ref: '#/components/schemas/RatingPointWeightings'
     Roster:
       type: object
       required:
@@ -231,7 +249,7 @@ components:
           type: array
           items:
             type: string
-    Rating:
+    RatingPointWeightings:
       type: object
       required:
         - pointsPerMissingPerson

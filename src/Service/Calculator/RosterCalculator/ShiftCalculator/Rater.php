@@ -55,7 +55,7 @@ class Rater
     {
         $missingPeopleCount = max(0, 2 - count($allAssignedPeople));
 
-        return $missingPeopleCount * $roster->getRating()->pointsPerMissingPerson;
+        return $missingPeopleCount * $roster->getRatingPointWeightings()->pointsPerMissingPerson;
     }
 
     private function pointsForMaybePerson(Shift $shift, array $allAssignedPeople, Roster $roster): int
@@ -65,7 +65,7 @@ class Rater
             /** @var Person $person */
             $availability = $person->getAvailabilityOn($shift->timeSlotPeriod);
             if (Availability::MAYBE === $availability) {
-                $points += $roster->getRating()->pointsPerMaybePerson;
+                $points += $roster->getRatingPointWeightings()->pointsPerMaybePerson;
             }
         }
 
@@ -78,10 +78,10 @@ class Rater
         $diff = $this->resultService->getCalculatedShifts($result, $person) - $person->targetShifts;
 
         if ($missingShifts > 0) { // when shifts are missing: only rate people who have too much plays, ignore it when they don't have enough (yet)
-            return max(0, $diff) * $roster->getRating()->pointsPerTargetShiftsMissed;
+            return max(0, $diff) * $roster->getRatingPointWeightings()->pointsPerTargetShiftsMissed;
         }
 
-        return abs($diff) * $roster->getRating()->pointsPerTargetShiftsMissed;
+        return abs($diff) * $roster->getRatingPointWeightings()->pointsPerTargetShiftsMissed;
     }
 
     private function pointsForMaxPerWeekExceeded(Person $person, array $result, Roster $roster): int
@@ -94,7 +94,7 @@ class Rater
 
         foreach ($roster->getWeekIds() as $weekId) {
             $shiftsPerWeek = $this->resultService->countShiftsPerWeek($result, $person, $weekId);
-            $points += max(0, $shiftsPerWeek - $person->maxShiftsPerWeek) * $roster->getRating()->pointsPerMaxPerWeekExceeded;
+            $points += max(0, $shiftsPerWeek - $person->maxShiftsPerWeek) * $roster->getRatingPointWeightings()->pointsPerMaxPerWeekExceeded;
         }
 
         return $points;

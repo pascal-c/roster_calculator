@@ -36,7 +36,7 @@ class Roster
     private array $locations = [];
     private array $shifts = [];
     private array $people = [];
-    private Rating $rating;
+    private RatingPointWeightings $ratingPointWeightings;
 
     private int $shiftCount = 0;
     private array $weekIds = [];
@@ -192,14 +192,14 @@ class Roster
         return $this;
     }
 
-    public function getRating(): Rating
+    public function getRatingPointWeightings(): RatingPointWeightings
     {
-        return $this->rating;
+        return $this->ratingPointWeightings;
     }
 
-    public function setRating(Rating $rating): static
+    public function setRatingPointWeightings(RatingPointWeightings $ratingPointWeightings): static
     {
-        $this->rating = $rating;
+        $this->ratingPointWeightings = $ratingPointWeightings;
 
         return $this;
     }

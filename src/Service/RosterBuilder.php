@@ -7,7 +7,7 @@ namespace App\Service;
 use App\Entity\Availability;
 use App\Entity\Location;
 use App\Entity\Person;
-use App\Entity\Rating;
+use App\Entity\RatingPointWeightings;
 use App\Entity\Roster;
 use App\Entity\Shift;
 use App\Value\Gender;
@@ -51,7 +51,7 @@ class RosterBuilder
             $this->addShift($shiftPayload, $roster);
         }
 
-        $this->addRating($payload['rating'] ?? [], $roster);
+        $this->setRatingPointWeightings($payload['ratingPointWeightings'] ?? [], $roster);
     }
 
     private function addPerson(array $personPayload, Roster $roster): void
@@ -109,12 +109,12 @@ class RosterBuilder
         $roster->addShift($shift);
     }
 
-    private function addRating(array $ratingPayload, Roster $roster): void
+    private function setRatingPointWeightings(array $ratingPayload, Roster $roster): void
     {
         if (empty($ratingPayload)) {
-            $rating = new Rating();
+            $ratingPointWeights = new RatingPointWeightings();
         } else {
-            $rating = new Rating(
+            $ratingPointWeights = new RatingPointWeightings(
                 pointsPerMissingPerson: $ratingPayload['pointsPerMissingPerson'],
                 pointsPerMaxPerWeekExceeded: $ratingPayload['pointsPerMaxPerWeekExceeded'],
                 pointsPerMaybePerson: $ratingPayload['pointsPerMaybePerson'],
@@ -122,6 +122,6 @@ class RosterBuilder
             );
         }
 
-        $roster->setRating($rating);
+        $roster->setRatingPointWeightings($ratingPointWeights);
     }
 }

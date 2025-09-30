@@ -191,7 +191,7 @@ final class RosterCest
     private function getPayloadWithIndividualRating(): array
     {
         $payload = $this->getPayload();
-        $payload['rating'] = [
+        $payload['ratingPointWeightings'] = [
             'pointsPerMissingPerson' => 1000,
             'pointsPerMaxPerWeekExceeded' => 100,
             'pointsPerMaybePerson' => 10,

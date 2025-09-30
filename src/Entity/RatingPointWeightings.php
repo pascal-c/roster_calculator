@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-class Rating
+class RatingPointWeightings
 {
     public function __construct(
         public readonly int $pointsPerMissingPerson = 100,
