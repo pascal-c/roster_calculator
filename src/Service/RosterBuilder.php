@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Availability;
 use App\Entity\Location;
 use App\Entity\Person;
+use App\Entity\Rating;
 use App\Entity\Roster;
 use App\Entity\Shift;
 use App\Value\Gender;
@@ -39,53 +40,88 @@ class RosterBuilder
         $payload = $roster->getPreconditions();
 
         foreach ($payload['people'] as $personPayload) {
-            $person = new Person(
-                id: $personPayload['id'],
-                gender: Gender::from($personPayload['gender']),
-                wishedShiftsPerMonth: $personPayload['constraints']['wishedShiftsPerMonth'],
-                maxShiftsPerMonth: $personPayload['constraints']['maxShiftsPerMonth'],
-                maxShiftsPerWeek: $personPayload['constraints']['maxShiftsPerWeek'] ?? null,
-                maxShiftsPerDay: $personPayload['constraints']['maxShiftsPerDay'],
-                targetShifts: $personPayload['constraints']['targetShifts'],
-            );
-            foreach ($personPayload['availabilities'] as $availabilityPayload) {
-                $availability = new Availability(
-                    timeSlot: new TimeSlot(
-                        date: new \DateTimeImmutable($availabilityPayload['date']),
-                        daytime: $availabilityPayload['daytime'],
-                    ),
-                    availability: $availabilityPayload['availability'],
-                );
-                $person->addAvailability($availability);
-            }
-
-            $roster->addPerson($person);
+            $this->addPerson($personPayload, $roster);
         }
 
         foreach ($payload['locations'] as $locationPayload) {
-            $blockedPeople = array_map(
-                fn (string $personId): Person => $roster->getPerson($personId),
-                $locationPayload['blockedPeople'] ?? [],
-            );
-            $location = new Location($locationPayload['id'], $blockedPeople);
-            $roster->addLocation($location);
+            $this->addLocation($locationPayload, $roster);
         }
 
         foreach ($payload['shifts'] as $shiftPayload) {
-            $assignedPeople = array_map(
-                fn (string $id): Person => $roster->getPerson($id),
-                $shiftPayload['personIds'] ?? [],
-            );
-            $shift = new Shift(
-                id: $shiftPayload['id'],
-                timeSlotPeriod: new TimeSlotPeriod(
-                    date: new \DateTimeImmutable($shiftPayload['date']),
-                    daytime: $shiftPayload['daytime'],
-                ),
-                location: $roster->getLocation($shiftPayload['locationId'] ?? null),
-                assignedPeople: $assignedPeople,
-            );
-            $roster->addShift($shift);
+            $this->addShift($shiftPayload, $roster);
         }
+
+        $this->addRating($payload['rating'] ?? [], $roster);
+    }
+
+    private function addPerson(array $personPayload, Roster $roster): void
+    {
+        $person = new Person(
+            id: $personPayload['id'],
+            gender: Gender::from($personPayload['gender']),
+            wishedShiftsPerMonth: $personPayload['constraints']['wishedShiftsPerMonth'],
+            maxShiftsPerMonth: $personPayload['constraints']['maxShiftsPerMonth'],
+            maxShiftsPerWeek: $personPayload['constraints']['maxShiftsPerWeek'] ?? null,
+            maxShiftsPerDay: $personPayload['constraints']['maxShiftsPerDay'],
+            targetShifts: $personPayload['constraints']['targetShifts'],
+        );
+        foreach ($personPayload['availabilities'] as $availabilityPayload) {
+            $availability = new Availability(
+                timeSlot: new TimeSlot(
+                    date: new \DateTimeImmutable($availabilityPayload['date']),
+                    daytime: $availabilityPayload['daytime'],
+                ),
+                availability: $availabilityPayload['availability'],
+            );
+            $person->addAvailability($availability);
+        }
+
+        $roster->addPerson($person);
+    }
+
+    private function addLocation(array $locationPayload, Roster $roster): void
+    {
+        $blockedPeople = array_map(
+            fn (string $personId): Person => $roster->getPerson($personId),
+            $locationPayload['blockedPeople'] ?? [],
+        );
+        $location = new Location($locationPayload['id'], $blockedPeople);
+
+        $roster->addLocation($location);
+    }
+
+    private function addShift(array $shiftPayload, Roster $roster): void
+    {
+        $assignedPeople = array_map(
+            fn (string $id): Person => $roster->getPerson($id),
+            $shiftPayload['personIds'] ?? [],
+        );
+        $shift = new Shift(
+            id: $shiftPayload['id'],
+            timeSlotPeriod: new TimeSlotPeriod(
+                date: new \DateTimeImmutable($shiftPayload['date']),
+                daytime: $shiftPayload['daytime'],
+            ),
+            location: $roster->getLocation($shiftPayload['locationId'] ?? null),
+            assignedPeople: $assignedPeople,
+        );
+
+        $roster->addShift($shift);
+    }
+
+    private function addRating(array $ratingPayload, Roster $roster): void
+    {
+        if (empty($ratingPayload)) {
+            $rating = new Rating();
+        } else {
+            $rating = new Rating(
+                pointsPerMissingPerson: $ratingPayload['pointsPerMissingPerson'],
+                pointsPerMaxPerWeekExceeded: $ratingPayload['pointsPerMaxPerWeekExceeded'],
+                pointsPerMaybePerson: $ratingPayload['pointsPerMaybePerson'],
+                pointsPerTargetShiftsMissed: $ratingPayload['pointsPerTargetShiftsMissed'],
+            );
+        }
+
+        $roster->setRating($rating);
     }
 }
