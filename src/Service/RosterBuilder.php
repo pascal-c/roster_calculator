@@ -83,7 +83,7 @@ class RosterBuilder
     {
         $blockedPeople = array_map(
             fn (string $personId): Person => $roster->getPerson($personId),
-            $locationPayload['blockedPeople'] ?? [],
+            $locationPayload['blockedPeopleIds'] ?? [],
         );
         $location = new Location($locationPayload['id'], $blockedPeople);
 

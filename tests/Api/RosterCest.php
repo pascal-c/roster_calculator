@@ -120,7 +120,7 @@ final class RosterCest
             'locations' => [
                 [
                     'id' => 'location1',
-                    'blockedPeople' => ['erwin'],
+                    'blockedPeopleIds' => ['erwin'],
                 ],
             ],
             'shifts' => [
