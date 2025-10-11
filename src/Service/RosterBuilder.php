@@ -81,10 +81,10 @@ class RosterBuilder
 
     private function addLocation(array $locationPayload, Roster $roster): void
     {
-        $blockedPeople = array_map(
-            fn (string $personId): Person => $roster->getPerson($personId),
+        $blockedPeople = array_filter(array_map(
+            fn (string $personId): ?Person => $roster->getPerson($personId),
             $locationPayload['blockedPeopleIds'] ?? [],
-        );
+        ));
         $location = new Location($locationPayload['id'], $blockedPeople);
 
         $roster->addLocation($location);

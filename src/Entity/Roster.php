@@ -128,9 +128,9 @@ class Roster
         return $this;
     }
 
-    public function getPerson(string $id): Person
+    public function getPerson(string $id): ?Person
     {
-        return $this->people[$id];
+        return $this->people[$id] ?? null;
     }
 
     public function getPeople(): array
