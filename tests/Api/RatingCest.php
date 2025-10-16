@@ -8,8 +8,6 @@ use Tests\Support\ApiTester;
 
 final class RatingCest
 {
-    private string $id;
-
     public function createWithFailure(ApiTester $I): void
     {
         $I->sendPostAsJson('/v1/rating', ['invalid' => 'payload']);
@@ -29,20 +27,26 @@ final class RatingCest
             'maybePerson' => 1, // uta is only maybe available for date2
             'targetShifts' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
             'maxPerWeek' => 0,
-            'total' => 109,
+            'locationPreferences' => 5, // uta has 5 points for location1, erwin has no location preference
+            'total' => 114,
         ]);
     }
 
     private function getPayload(): array
     {
         return [
-            'locations' => [],
+            'locations' => [
+                [
+                    'id' => 'location1',
+                ],
+            ],
             'shifts' => [
                 [
                     'id' => 'date1 id',
                     'date' => '2021-01-01',
                     'daytime' => 'am',
                     'personIds' => ['uta'],
+                    'locationId' => 'location1',
                 ],
                 [
                     'id' => 'date2 id',
@@ -60,6 +64,12 @@ final class RatingCest
                         'maxShiftsPerMonth' => 6,
                         'maxShiftsPerDay' => 1,
                         'targetShifts' => 3,
+                        'locationPreferences' => [
+                            [
+                                'locationId' => 'location1',
+                                'points' => 5,
+                            ],
+                        ],
                     ],
                     'availabilities' => [
                         [
@@ -99,18 +109,5 @@ final class RatingCest
                 ],
             ],
         ];
-    }
-
-    private function getPayloadWithIndividualRating(): array
-    {
-        $payload = $this->getPayload();
-        $payload['ratingPointWeightings'] = [
-            'pointsPerMissingPerson' => 1000,
-            'pointsPerMaxPerWeekExceeded' => 100,
-            'pointsPerMaybePerson' => 10,
-            'pointsPerTargetShiftsMissed' => 20,
-        ];
-
-        return $payload;
     }
 }
