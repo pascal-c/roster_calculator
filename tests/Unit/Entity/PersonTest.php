@@ -3,6 +3,8 @@
 namespace Tests\Unit\Entity;
 
 use App\Entity\Availability;
+use App\Entity\Location;
+use App\Entity\LocationPreference;
 use App\Entity\Person;
 use App\Value\Gender;
 use App\Value\Time\TimeSlot;
@@ -52,5 +54,20 @@ class PersonTest extends \Codeception\Test\Unit
 
         $person->addAvailability(new Availability(new TimeSlot($date, TimeSlot::PM), Availability::YES));
         $this->assertSame(Availability::MAYBE, $person->getAvailabilityOn($timeSlotPeriod));
+    }
+
+    public function testGetLocationPreferenceFor()
+    {
+        $location1 = new Location('locaction1');
+        $location2 = new Location('locaction2');
+        $person = new Person('1', Gender::FEMALE, 1, 1, 1, 1, 1);
+        $preference1 = new LocationPreference($location1, 5);
+        $person->addLocationPreference($preference1);
+
+        $this->assertSame(5, $person->getLocationPreferenceFor($location1)->points);
+        $this->assertSame(0, $person->getLocationPreferenceFor($location2)->points);
+
+        $this->assertSame($preference1, $person->getLocationPreferenceFor($location1));
+        $this->assertEquals(new LocationPreference($location2, 0), $person->getLocationPreferenceFor($location2));
     }
 }

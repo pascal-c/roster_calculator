@@ -3,6 +3,8 @@
 namespace Tests\Unit\Service\Calculator\RosterCalculator\ShiftCalculator;
 
 use App\Entity\Availability;
+use App\Entity\Location;
+use App\Entity\LocationPreference;
 use App\Entity\Person;
 use App\Entity\RatingPointWeightings;
 use App\Entity\Roster;
@@ -33,12 +35,17 @@ class RaterTest extends Unit
         $this->rater = new Rater($this->resultService);
 
         $this->roster = new Roster();
+        $location1 = new Location('location1');
         $this->person1 = Stub::make(Person::class, ['id' => '1', 'targetShifts' => 1, 'maxShiftsPerWeek' => 1, 'getAvailabilityOn' => Availability::MAYBE]);
         $this->person2 = Stub::make(Person::class, ['id' => '2', 'targetShifts' => 3, 'maxShiftsPerWeek' => 1, 'getAvailabilityOn' => Availability::YES]);
+        $this->person1->addLocationPreference(new LocationPreference($location1, 10)); // 10 points for shift 1
+        $this->person1->addLocationPreference(new LocationPreference(null, 5)); // 5 points for shift 3
+        $this->person2->addLocationPreference(new LocationPreference($location1, 7)); // 7 points for shift 1
+
         $this->roster->addPerson($this->person1);
         $this->roster->addPerson($this->person2);
 
-        $this->shift1 = new Shift('shift1', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL), null, [$this->person2]);
+        $this->shift1 = new Shift('shift1', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL), $location1, [$this->person2]);
         $this->shift2 = new Shift('shift2', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-31'), TimeSlotPeriod::AM), null, []); // not assigned -> 100 points
         $this->shift3 = new Shift('shift3', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-30'), TimeSlotPeriod::PM), null, [$this->person1]); // is only maybe available -> 1 point
         $this->roster->addShift($this->shift1);
@@ -86,7 +93,8 @@ class RaterTest extends Unit
             'maybePerson' => 2,
             'targetShifts' => $expectedTargetPlayPoints,
             'maxPerWeek' => 20,
-            'total' => 222 + $expectedTargetPlayPoints,
+            'locationPreferences' => 22,
+            'total' => 244 + $expectedTargetPlayPoints,
         ];
 
         $this->assertSame($expectedPoints, $points);

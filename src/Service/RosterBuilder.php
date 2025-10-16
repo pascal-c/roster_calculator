@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Availability;
 use App\Entity\Location;
+use App\Entity\LocationPreference;
 use App\Entity\Person;
 use App\Entity\RatingPointWeightings;
 use App\Entity\Roster;
@@ -47,6 +48,14 @@ class RosterBuilder
             $this->addLocation($locationPayload, $roster);
         }
 
+        foreach ($payload['people'] as $personPayload) {
+            $person = $roster->getPerson($personPayload['id']);
+            $locationPreferencesPayload = $personPayload['constraints']['locationPreferences'] ?? [];
+            foreach ($locationPreferencesPayload as $locationPreferencePayload) {
+                $this->addLocationPreference($locationPreferencePayload, $person, $roster);
+            }
+        }
+
         foreach ($payload['shifts'] as $shiftPayload) {
             $this->addShift($shiftPayload, $roster);
         }
@@ -77,6 +86,15 @@ class RosterBuilder
         }
 
         $roster->addPerson($person);
+    }
+
+    private function addLocationPreference(array $locationPreferencePayload, Person $person, Roster $roster): void
+    {
+        $locationPreference = new LocationPreference(
+            location: $roster->getLocation($locationPreferencePayload['locationId'] ?? null),
+            points: $locationPreferencePayload['points'] ?? 0,
+        );
+        $person->addLocationPreference($locationPreference);
     }
 
     private function addLocation(array $locationPayload, Roster $roster): void

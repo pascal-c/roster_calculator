@@ -198,6 +198,18 @@ components:
               type: integer
             targetShifts:
               type: integer
+            locationPreferences:
+              type: array
+              items:
+                type: object
+                required:
+                  - locationId
+                  - points
+                properties:
+                  locationId:
+                    type: string
+                  points:
+                    type: integer
         availabilities:
           type: array
           items:

@@ -10,6 +10,7 @@ use App\Value\Time\TimeSlotPeriod;
 class Person
 {
     private array $availabilities = [];
+    private array $locationPreferences = [];
 
     public function __construct(
         public readonly string $id,
@@ -46,5 +47,15 @@ class Person
         }
 
         return $result;
+    }
+
+    public function addLocationPreference(LocationPreference $locationPreference): void
+    {
+        $this->locationPreferences[$locationPreference->location?->id] = $locationPreference;
+    }
+
+    public function getLocationPreferenceFor(?Location $location): LocationPreference
+    {
+        return $this->locationPreferences[$location?->id] ?? new LocationPreference($location);
     }
 }
