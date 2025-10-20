@@ -9,6 +9,7 @@ use App\Service\TimeService;
 
 class BackTrackingCalculator
 {
+    public const TIMEOUT_SECONDS = 85;
     public int $counter = 0;
     private int $time;
 
@@ -46,6 +47,6 @@ class BackTrackingCalculator
 
     public function isTimedOut(): bool
     {
-        return $this->timeService->unixTimestamp() - $this->time > 85;
+        return $this->timeService->unixTimestamp() - $this->time > self::TIMEOUT_SECONDS;
     }
 }

@@ -19,7 +19,7 @@ class Calculator
 
     public function calculate(Roster $roster): array
     {
-        set_time_limit(90);
+        set_time_limit(BackTrackingCalculator::TIMEOUT_SECONDS + 5);
 
         $firstResult = $this->simpleCalculator->calculate($roster);
         $bestResult = $this->backTrackingCalculator->calculate(
