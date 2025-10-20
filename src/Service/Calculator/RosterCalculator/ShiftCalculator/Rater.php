@@ -31,6 +31,7 @@ class Rater
             'maybePerson' => 0,
             'targetShifts' => 0,
             'maxPerWeek' => 0,
+            'locationPreferences' => 0,
         ];
 
         $shiftAssignments = $this->resultService->getShiftAssignments($result);
@@ -39,6 +40,7 @@ class Rater
             $allAssignedPeople = array_merge($shiftAssignment['addedPeople'], $shift->assignedPeople);
             $points['missingPerson'] += $this->pointsForMissingPerson($allAssignedPeople, $roster);
             $points['maybePerson'] += $this->pointsForMaybePerson($shift, $allAssignedPeople, $roster);
+            $points['locationPreferences'] += $this->pointsForLocationPreferences($shift, $allAssignedPeople);
         }
 
         foreach ($roster->getPeople() as $person) {
@@ -67,6 +69,18 @@ class Rater
             if (Availability::MAYBE === $availability) {
                 $points += $roster->getRatingPointWeightings()->pointsPerMaybePerson;
             }
+        }
+
+        return $points;
+    }
+
+    private function pointsForLocationPreferences(Shift $shift, array $allAssignedPeople): int
+    {
+        $points = 0;
+        foreach ($allAssignedPeople as $person) {
+            /** @var Person $person */
+            $locationPreference = $person->getLocationPreferenceFor($shift->location);
+            $points += $locationPreference->points;
         }
 
         return $points;
