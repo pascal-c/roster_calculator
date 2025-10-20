@@ -56,6 +56,10 @@ class Person
 
     public function getLocationPreferenceFor(?Location $location): LocationPreference
     {
-        return $this->locationPreferences[$location?->id] ?? new LocationPreference($location);
+        if (!array_key_exists($location?->id, $this->locationPreferences)) {
+            $this->addLocationPreference(new LocationPreference($location));
+        }
+
+        return $this->locationPreferences[$location?->id];
     }
 }
