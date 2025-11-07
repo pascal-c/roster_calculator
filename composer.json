@@ -76,7 +76,7 @@
         "codeception/module-phpbrowser": "*",
         "codeception/module-rest": "*",
         "codeception/module-symfony": "^3.5",
-        "friendsofphp/php-cs-fixer": "^3.88",
+        "friendsofphp/php-cs-fixer": "^3.89",
         "symfony/maker-bundle": "^1.62"
     }
 }
