@@ -12,62 +12,64 @@ use App\Value\Time\TimeSlotPeriod;
 
 class PersonTest extends \Codeception\Test\Unit
 {
+    private Person $person;
+
+    public function _before(): void
+    {
+        $this->person = new Person('1', Gender::FEMALE, 1, 1, 1, 1, 1, locationPreferenceDefaultPoints: 1);
+    }
+
     public function testIsAvailableOnWithTimeSlot()
     {
-        $person = new Person('1', Gender::FEMALE, 1, 1, 1, 1, 1);
         $goodTimeSlot = new TimeSlot(new \DateTimeImmutable('2021-01-01'), TimeSlot::AM);
         $unavailableTimeSlot = new TimeSlot(new \DateTimeImmutable('2021-01-02'), TimeSlot::AM);
-        $person->addAvailability(new Availability($goodTimeSlot, Availability::MAYBE));
-        $person->addAvailability(new Availability($unavailableTimeSlot, Availability::NO));
+        $this->person->addAvailability(new Availability($goodTimeSlot, Availability::MAYBE));
+        $this->person->addAvailability(new Availability($unavailableTimeSlot, Availability::NO));
 
-        $this->assertTrue($person->isAvailableOn($goodTimeSlot));
-        $this->assertFalse($person->isAvailableOn($unavailableTimeSlot));
+        $this->assertTrue($this->person->isAvailableOn($goodTimeSlot));
+        $this->assertFalse($this->person->isAvailableOn($unavailableTimeSlot));
 
         $missingTimeSlot = new TimeSlot(new \DateTimeImmutable('2021-01-01'), TimeSlot::PM);
-        $this->assertFalse($person->isAvailableOn($missingTimeSlot));
+        $this->assertFalse($this->person->isAvailableOn($missingTimeSlot));
     }
 
     public function testIsAvailableOnWithTimeSlotPeriod()
     {
-        $person = new Person('1', Gender::FEMALE, 1, 1, 1, 1, 1);
-
         $date = new \DateTimeImmutable('2021-01-01');
         $timeSlot = new TimeSlot($date, TimeSlot::AM);
-        $person->addAvailability(new Availability($timeSlot, Availability::MAYBE));
+        $this->person->addAvailability(new Availability($timeSlot, Availability::MAYBE));
 
         $timeSlotPeriod = new TimeSlotPeriod($date, TimeSlotPeriod::ALL);
-        $this->assertFalse($person->isAvailableOn($timeSlotPeriod));
+        $this->assertFalse($this->person->isAvailableOn($timeSlotPeriod));
 
         $timeSlot = new TimeSlot($date, TimeSlot::PM);
-        $person->addAvailability(new Availability($timeSlot, Availability::YES));
-        $this->assertTrue($person->isAvailableOn($timeSlotPeriod));
+        $this->person->addAvailability(new Availability($timeSlot, Availability::YES));
+        $this->assertTrue($this->person->isAvailableOn($timeSlotPeriod));
     }
 
     public function testGetAvailabilityOn()
     {
-        $person = new Person('1', Gender::FEMALE, 1, 1, 1, 1, 1);
         $date = new \DateTimeImmutable('2021-01-01');
-        $person->addAvailability(new Availability(new TimeSlot($date, TimeSlot::AM), Availability::MAYBE));
+        $this->person->addAvailability(new Availability(new TimeSlot($date, TimeSlot::AM), Availability::MAYBE));
 
         $timeSlotPeriod = new TimeSlotPeriod($date, TimeSlotPeriod::ALL);
-        $this->assertSame(Availability::NO, $person->getAvailabilityOn($timeSlotPeriod));
+        $this->assertSame(Availability::NO, $this->person->getAvailabilityOn($timeSlotPeriod));
 
-        $person->addAvailability(new Availability(new TimeSlot($date, TimeSlot::PM), Availability::YES));
-        $this->assertSame(Availability::MAYBE, $person->getAvailabilityOn($timeSlotPeriod));
+        $this->person->addAvailability(new Availability(new TimeSlot($date, TimeSlot::PM), Availability::YES));
+        $this->assertSame(Availability::MAYBE, $this->person->getAvailabilityOn($timeSlotPeriod));
     }
 
     public function testGetLocationPreferenceFor()
     {
         $location1 = new Location('locaction1');
         $location2 = new Location('locaction2');
-        $person = new Person('1', Gender::FEMALE, 1, 1, 1, 1, 1);
         $preference1 = new LocationPreference($location1, 5);
-        $person->addLocationPreference($preference1);
+        $this->person->addLocationPreference($preference1);
 
-        $this->assertSame(5, $person->getLocationPreferenceFor($location1)->points);
-        $this->assertSame(0, $person->getLocationPreferenceFor($location2)->points);
+        $this->assertSame(5, $this->person->getLocationPreferenceFor($location1)->points); // 5 was explicitly set
+        $this->assertSame(1, $this->person->getLocationPreferenceFor($location2)->points); // default points 1
 
-        $this->assertSame($preference1, $person->getLocationPreferenceFor($location1));
-        $this->assertEquals(new LocationPreference($location2, 0), $person->getLocationPreferenceFor($location2));
+        $this->assertSame($preference1, $this->person->getLocationPreferenceFor($location1));
+        $this->assertEquals(new LocationPreference($location2, 1), $this->person->getLocationPreferenceFor($location2));
     }
 }

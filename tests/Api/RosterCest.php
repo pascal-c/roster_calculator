@@ -50,6 +50,7 @@ final class RosterCest
                 'maybePerson' => 1, // uta is only maybe available for date2
                 'targetShifts' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
                 'maxPerWeek' => 0,
+                'locationPreferences' => 0, // no location preferences set
                 'total' => 109,
             ],
         ]);

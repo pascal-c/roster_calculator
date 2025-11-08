@@ -20,6 +20,7 @@ class Person
         public readonly ?int $maxShiftsPerWeek,
         public readonly int $maxShiftsPerDay,
         public readonly int $targetShifts,
+        public readonly int $locationPreferenceDefaultPoints,
     ) {
     }
 
@@ -57,7 +58,7 @@ class Person
     public function getLocationPreferenceFor(?Location $location): LocationPreference
     {
         if (!array_key_exists($location?->id, $this->locationPreferences)) {
-            $this->addLocationPreference(new LocationPreference($location));
+            $this->addLocationPreference(new LocationPreference($location, $this->locationPreferenceDefaultPoints));
         }
 
         return $this->locationPreferences[$location?->id];

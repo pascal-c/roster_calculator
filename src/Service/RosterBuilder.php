@@ -73,6 +73,7 @@ class RosterBuilder
             maxShiftsPerWeek: $personPayload['constraints']['maxShiftsPerWeek'] ?? null,
             maxShiftsPerDay: $personPayload['constraints']['maxShiftsPerDay'],
             targetShifts: $personPayload['constraints']['targetShifts'],
+            locationPreferenceDefaultPoints: $personPayload['constraints']['locationPreferenceDefaultPoints'] ?? 0,
         );
         foreach ($personPayload['availabilities'] as $availabilityPayload) {
             $availability = new Availability(
@@ -92,8 +93,9 @@ class RosterBuilder
     {
         $locationPreference = new LocationPreference(
             location: $roster->getLocation($locationPreferencePayload['locationId'] ?? null),
-            points: $locationPreferencePayload['points'] ?? 0,
+            points: $locationPreferencePayload['points'],
         );
+
         $person->addLocationPreference($locationPreference);
     }
 

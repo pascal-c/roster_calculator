@@ -36,8 +36,8 @@ class RaterTest extends Unit
 
         $this->roster = new Roster();
         $location1 = new Location('location1');
-        $this->person1 = Stub::make(Person::class, ['id' => '1', 'targetShifts' => 1, 'maxShiftsPerWeek' => 1, 'getAvailabilityOn' => Availability::MAYBE]);
-        $this->person2 = Stub::make(Person::class, ['id' => '2', 'targetShifts' => 3, 'maxShiftsPerWeek' => 1, 'getAvailabilityOn' => Availability::YES]);
+        $this->person1 = Stub::make(Person::class, ['id' => '1', 'targetShifts' => 1, 'maxShiftsPerWeek' => 1, 'getAvailabilityOn' => Availability::MAYBE, 'locationPreferenceDefaultPoints' => 1]);
+        $this->person2 = Stub::make(Person::class, ['id' => '2', 'targetShifts' => 3, 'maxShiftsPerWeek' => 1, 'getAvailabilityOn' => Availability::YES, 'locationPreferenceDefaultPoints' => 2]);
         $this->person1->addLocationPreference(new LocationPreference($location1, 10)); // 10 points for shift 1
         $this->person1->addLocationPreference(new LocationPreference(null, 5)); // 5 points for shift 3
         $this->person2->addLocationPreference(new LocationPreference($location1, 7)); // 7 points for shift 1
@@ -65,7 +65,7 @@ class RaterTest extends Unit
             ],
             'shift2' => [
                 'shift' => $this->shift2,
-                'addedPeople' => [$this->person2],
+                'addedPeople' => [$this->person2], // default location preference -> 2 points
             ],
             'shift3' => [
                 'shift' => $this->shift3,
@@ -93,8 +93,8 @@ class RaterTest extends Unit
             'maybePerson' => 2,
             'targetShifts' => $expectedTargetPlayPoints,
             'maxPerWeek' => 20,
-            'locationPreferences' => 22,
-            'total' => 244 + $expectedTargetPlayPoints,
+            'locationPreferences' => 24, // 10 + 7 (shift1) + 2 (shift2) + 5 (shift3)
+            'total' => 246 + $expectedTargetPlayPoints,
         ];
 
         $this->assertSame($expectedPoints, $points);

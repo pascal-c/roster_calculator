@@ -27,8 +27,8 @@ final class RatingCest
             'maybePerson' => 1, // uta is only maybe available for date2
             'targetShifts' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
             'maxPerWeek' => 0,
-            'locationPreferences' => 5, // uta has 5 points for location1, erwin has no location preference
-            'total' => 114,
+            'locationPreferences' => 6, // uta has 6 points for location1, erwin has location preference default points 1
+            'total' => 115,
         ]);
     }
 
@@ -93,6 +93,7 @@ final class RatingCest
                         'maxShiftsPerDay' => 1,
                         'maxShiftsPerWeek' => 2,
                         'targetShifts' => 4,
+                        'locationPreferenceDefaultPoints' => 1,
                     ],
                     'availabilities' => [
                         [

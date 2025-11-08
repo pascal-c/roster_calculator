@@ -210,6 +210,8 @@ components:
                     type: string
                   points:
                     type: integer
+            locationPreferenceDefaultPoints:
+              type: integer
         availabilities:
           type: array
           items:
@@ -275,6 +277,7 @@ components:
         - maybePerson
         - targetShifts
         - maxPerWeek
+        - locationPreferences
         - total
       properties:
         missingPerson:
@@ -284,6 +287,8 @@ components:
         targetShifts:
           type: integer
         maxPerWeek:
+          type: integer
+        locationPreferences:
           type: integer
         total:
           type: integer
