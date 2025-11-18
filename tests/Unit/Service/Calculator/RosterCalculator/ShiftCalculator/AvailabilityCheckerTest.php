@@ -115,15 +115,27 @@ final class AvailabilityCheckerTest extends Unit
         ];
     }
 
-    #[DataProvider('isBlockedDataProvider')]
-    public function testIsBlocked(Person $person, ?Location $location, $expectedResult): void
+    public function testIsBlockedForAPerson(): void
     {
         $this->resultService->expects($this->never())->method($this->anything());
         $this->maxShiftsReachedChecker->expects($this->never())->method($this->anything());
-        $this->assertSame($expectedResult, $this->availabilityChecker->isBlocked($location, $person));
+
+        $blockedPerson = $this->make(Person::class);
+        $person1 = $this->make(Person::class);
+        $person2 = $this->make(Person::class, ['blockedPeople' => [$blockedPerson]]);
+        $this->assertFalse($this->availabilityChecker->isBlockedForAPerson([$person1], $blockedPerson));
+        $this->assertTrue($this->availabilityChecker->isBlockedForAPerson([$person1, $person2], $blockedPerson));
     }
 
-    public function isBlockedDataProvider(): \Generator
+    #[DataProvider('isBlockedForLocationDataProvider')]
+    public function testIsBlockedForLocation(Person $person, ?Location $location, $expectedResult): void
+    {
+        $this->resultService->expects($this->never())->method($this->anything());
+        $this->maxShiftsReachedChecker->expects($this->never())->method($this->anything());
+        $this->assertSame($expectedResult, $this->availabilityChecker->isBlockedForLocation($location, $person));
+    }
+
+    public function isBlockedForLocationDataProvider(): \Generator
     {
         $person = $this->make(Person::class, ['id' => '1']);
         yield 'when location is null' => [
@@ -144,7 +156,7 @@ final class AvailabilityCheckerTest extends Unit
     }
 
     #[DataProvider('isAvailableForDataProvider')]
-    public function testIsAvailableFor(bool $isAvailableOn, bool $isAlreadyAssignedWithin, bool $isBlocked, bool $maxShiftsPerMonthReached, bool $maxShiftsPerDayReached, bool $onlyMen, bool $expectedResult): void
+    public function testIsAvailableFor(bool $isAvailableOn, bool $isAlreadyAssignedWithin, bool $isBlockedForLocation, bool $isBlockedForAPerson, bool $maxShiftsPerMonthReached, bool $maxShiftsPerDayReached, bool $onlyMen, bool $expectedResult): void
     {
         $person = $this->make(Person::class, ['id' => '1', 'isAvailableOn' => $isAvailableOn]);
         $shift = $this->make(Shift::class, [
@@ -159,12 +171,13 @@ final class AvailabilityCheckerTest extends Unit
             ],
             [
                 'isAlreadyAssignedWithin' => $isAlreadyAssignedWithin,
-                'isBlocked' => $isBlocked,
+                'isBlockedForLocation' => $isBlockedForLocation,
+                'isBlockedForAPerson' => $isBlockedForAPerson,
                 'onlyMen' => $onlyMen,
             ]
         );
         $availabilityChecker->method('isAlreadyAssignedWithin')->with($this->result, $person, $shift->timeSlotPeriod);
-        $availabilityChecker->method('isBlocked')->with($shift->location, $person);
+        $availabilityChecker->method('isBlockedForLocation')->with($shift->location, $person);
         $availabilityChecker->method('onlyMen')->with($this->result, $shift, $person);
 
         $this->maxShiftsReachedChecker
@@ -184,7 +197,8 @@ final class AvailabilityCheckerTest extends Unit
         yield 'when person is available' => [
             'isAvailableOn' => true,
             'isAlreadyAssignedWithin' => false,
-            'isBlocked' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => false,
             'maxShiftsPerMonthReached' => false,
             'maxShiftsPerDayReached' => false,
             'onlyMen' => false,
@@ -193,7 +207,8 @@ final class AvailabilityCheckerTest extends Unit
         yield 'when person is not available' => [
             'isAvailableOn' => false,
             'isAlreadyAssignedWithin' => false,
-            'isBlocked' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => false,
             'maxShiftsPerMonthReached' => false,
             'maxShiftsPerDayReached' => false,
             'onlyMen' => false,
@@ -202,16 +217,28 @@ final class AvailabilityCheckerTest extends Unit
         yield 'when person isAlreadyAssignedWithin' => [
             'isAvailableOn' => true,
             'isAlreadyAssignedWithin' => true,
-            'isBlocked' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => false,
             'maxShiftsPerMonthReached' => false,
             'maxShiftsPerDayReached' => false,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
-        yield 'when person isBlocked' => [
+        yield 'when person isBlockedForLocation' => [
             'isAvailableOn' => true,
             'isAlreadyAssignedWithin' => false,
-            'isBlocked' => true,
+            'isBlockedForLocation' => true,
+            'isBlockedForAPerson' => false,
+            'maxShiftsPerMonthReached' => false,
+            'maxShiftsPerDayReached' => false,
+            'onlyMen' => false,
+            'expectedResult' => false,
+        ];
+        yield 'when person isBlockedForAPerson' => [
+            'isAvailableOn' => true,
+            'isAlreadyAssignedWithin' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => true,
             'maxShiftsPerMonthReached' => false,
             'maxShiftsPerDayReached' => false,
             'onlyMen' => false,
@@ -220,7 +247,8 @@ final class AvailabilityCheckerTest extends Unit
         yield 'when person has maxShiftsPerMonthReached' => [
             'isAvailableOn' => true,
             'isAlreadyAssignedWithin' => false,
-            'isBlocked' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => false,
             'maxShiftsPerMonthReached' => true,
             'maxShiftsPerDayReached' => false,
             'onlyMen' => false,
@@ -229,7 +257,8 @@ final class AvailabilityCheckerTest extends Unit
         yield 'when person has maxShiftsPerDayReached' => [
             'isAvailableOn' => true,
             'isAlreadyAssignedWithin' => false,
-            'isBlocked' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => false,
             'maxShiftsPerMonthReached' => false,
             'maxShiftsPerDayReached' => true,
             'onlyMen' => false,
@@ -238,7 +267,8 @@ final class AvailabilityCheckerTest extends Unit
         yield 'when shift would have onlyMen' => [
             'isAvailableOn' => true,
             'isAlreadyAssignedWithin' => false,
-            'isBlocked' => false,
+            'isBlockedForLocation' => false,
+            'isBlockedForAPerson' => false,
             'maxShiftsPerMonthReached' => false,
             'maxShiftsPerDayReached' => false,
             'onlyMen' => true,

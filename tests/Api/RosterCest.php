@@ -48,10 +48,10 @@ final class RosterCest
             'rating' => [
                 'missingPerson' => 100, // nobody assigned for date1
                 'maybePerson' => 1, // uta is only maybe available for date2
-                'targetShifts' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'targetShifts' => 16,  // sum of target shifts is 11, only 3 assigned (11-3)*2 = 16
                 'maxPerWeek' => 0,
                 'locationPreferences' => 0, // no location preferences set
-                'total' => 109,
+                'total' => 117,
             ],
         ]);
     }
@@ -79,13 +79,14 @@ final class RosterCest
             'personalResults' => [
                 ['personId' => 'uta', 'calculatedShifts' => 2],
                 ['personId' => 'erwin', 'calculatedShifts' => 1],
+                ['personId' => 'unpopular-person', 'calculatedShifts' => 0],
             ],
             'rating' => [
                 'missingPerson' => 1000, // nobody assigned for date1
                 'maybePerson' => 10, // uta is only maybe available for date2
-                'targetShifts' => 80, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+                'targetShifts' => 160, // sum of target shifts is 11, only 3 assigned (11-3)*20 = 160
                 'maxPerWeek' => 0,
-                'total' => 1090,
+                'total' => 1170,
             ],
         ]);
     }
@@ -148,6 +149,7 @@ final class RosterCest
                         'maxShiftsPerMonth' => 6,
                         'maxShiftsPerDay' => 1,
                         'targetShifts' => 3,
+                        'blockedPeopleIds' => ['unpopular-person'],
                     ],
                     'availabilities' => [
                         [
@@ -171,12 +173,35 @@ final class RosterCest
                         'maxShiftsPerDay' => 1,
                         'maxShiftsPerWeek' => 2,
                         'targetShifts' => 4,
+                        'blockedPeopleIds' => ['unpopular-person'],
                     ],
                     'availabilities' => [
                         [
                             'date' => '2021-01-01',
                             'daytime' => 'am',
                             'availability' => 'maybe',
+                        ],
+                        [
+                            'date' => '2021-01-02',
+                            'daytime' => 'pm',
+                            'availability' => 'yes',
+                        ],
+                    ],
+                ],
+                [ // blocked by all clowns
+                    'id' => 'unpopular-person',
+                    'gender' => 'diverse',
+                    'constraints' => [
+                        'wishedShiftsPerMonth' => 4,
+                        'maxShiftsPerMonth' => 3,
+                        'maxShiftsPerDay' => 2,
+                        'targetShifts' => 4,
+                    ],
+                    'availabilities' => [
+                        [
+                            'date' => '2021-01-01',
+                            'daytime' => 'am',
+                            'availability' => 'yes',
                         ],
                         [
                             'date' => '2021-01-02',

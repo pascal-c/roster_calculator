@@ -212,6 +212,10 @@ components:
                     type: integer
             locationPreferenceDefaultPoints:
               type: integer
+            blockedPeopleIds:
+              type: array
+              items:
+                type: string
         availabilities:
           type: array
           items:
