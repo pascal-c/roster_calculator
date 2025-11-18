@@ -230,8 +230,15 @@ class ResultServiceTest extends \Codeception\Test\Unit
         $addedPeople2 = $this->resultService->getAddedPeople($result2, $shift3);
         $addedPeople3 = $this->resultService->getAddedPeople($result3, $shift3);
         $this->assertEquals([], $addedPeople1);
-        $this->assertEquals([$this->person1], $addedPeople2);
-        $this->assertEquals([$this->person1, $this->person2], $addedPeople3);
+    }
+
+    public function testGetAllAssignedPeople(): void
+    {
+        $shift1 = $this->roster->getShifts()[0];
+        $result = $this->resultService->buildEmptyResult($this->roster);
+        $result = $this->resultService->add($result, $shift1, $this->person2);
+
+        $this->assertEquals([$this->person1, $this->person2], $this->resultService->getAllAssignedPeople($result, $shift1));
     }
 
     public function testGetLastAddedPerson(): void

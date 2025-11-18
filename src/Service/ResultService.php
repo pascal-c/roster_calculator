@@ -74,6 +74,11 @@ class ResultService
         return $result['shifts'][$shift->id]['addedPeople'] ?? [];
     }
 
+    public function getAllAssignedPeople(array $result, Shift $shift): array
+    {
+        return array_merge($shift->assignedPeople, $this->getAddedPeople($result, $shift));
+    }
+
     public function getLastAddedPerson(array $result, Shift $shift): ?Person
     {
         $addedPeople = $this->getAddedPeople($result, $shift);

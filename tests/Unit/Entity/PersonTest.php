@@ -59,7 +59,7 @@ class PersonTest extends \Codeception\Test\Unit
         $this->assertSame(Availability::MAYBE, $this->person->getAvailabilityOn($timeSlotPeriod));
     }
 
-    public function testGetLocationPreferenceFor()
+    public function testGetLocationPreferenceFor(): void
     {
         $location1 = new Location('locaction1');
         $location2 = new Location('locaction2');
@@ -71,5 +71,18 @@ class PersonTest extends \Codeception\Test\Unit
 
         $this->assertSame($preference1, $this->person->getLocationPreferenceFor($location1));
         $this->assertEquals(new LocationPreference($location2, 1), $this->person->getLocationPreferenceFor($location2));
+    }
+
+    public function testAddBlockedPerson(): void
+    {
+        $blockedPerson = $this->make(Person::class);
+
+        $this->assertEmpty($this->person->getBlockedPeople());
+        $this->assertFalse($this->person->isBlocked($blockedPerson));
+
+        $this->person->addBlockedPerson($blockedPerson);
+
+        $this->assertSame([$blockedPerson], $this->person->getBlockedPeople());
+        $this->assertTrue($this->person->isBlocked($blockedPerson));
     }
 }

@@ -44,6 +44,10 @@ class RosterBuilder
             $this->addPerson($personPayload, $roster);
         }
 
+        foreach ($payload['people'] as $personPayload) {
+            $this->addBlockedPeople($personPayload, $roster);
+        }
+
         foreach ($payload['locations'] as $locationPayload) {
             $this->addLocation($locationPayload, $roster);
         }
@@ -87,6 +91,17 @@ class RosterBuilder
         }
 
         $roster->addPerson($person);
+    }
+
+    private function addBlockedPeople(array $personPayload, Roster $roster): void
+    {
+        $person = $roster->getPerson($personPayload['id']);
+        foreach ($personPayload['constraints']['blockedPeopleIds'] ?? [] as $blockedPersonId) {
+            $blockedPerson = $roster->getPerson($blockedPersonId);
+            if ($blockedPerson) {
+                $person->addBlockedPerson($blockedPerson);
+            }
+        }
     }
 
     private function addLocationPreference(array $locationPreferencePayload, Person $person, Roster $roster): void

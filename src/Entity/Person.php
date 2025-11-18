@@ -11,6 +11,7 @@ class Person
 {
     private array $availabilities = [];
     private array $locationPreferences = [];
+    private array $blockedPeople = [];
 
     public function __construct(
         public readonly string $id,
@@ -62,5 +63,20 @@ class Person
         }
 
         return $this->locationPreferences[$location?->id];
+    }
+
+    public function addBlockedPerson(Person $person): void
+    {
+        $this->blockedPeople[] = $person;
+    }
+
+    public function getBlockedPeople(): array
+    {
+        return $this->blockedPeople;
+    }
+
+    public function isBlocked(Person $person): bool
+    {
+        return in_array($person, $this->getBlockedPeople(), true);
     }
 }

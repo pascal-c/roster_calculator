@@ -22,7 +22,8 @@ class AvailabilityChecker
         return
             $person->isAvailableOn($shift->timeSlotPeriod)
             && !$this->isAlreadyAssignedWithin($result, $person, $shift->timeSlotPeriod)
-            && !$this->isBlocked($shift->location, $person)
+            && !$this->isBlockedForLocation($shift->location, $person)
+            && !$this->isBlockedForAPerson($this->resultService->getAllAssignedPeople($result, $shift), $person)
             && !$this->maxShiftsReachedChecker->maxShiftsPerMonthReached($person, $result)
             && !$this->maxShiftsReachedChecker->maxShiftsPerDayReached($shift->timeSlotPeriod->dateIndex, $person, $result)
             && !$this->onlyMen($result, $shift, $person)
@@ -61,12 +62,24 @@ class AvailabilityChecker
         return false;
     }
 
-    public function isBlocked(?Location $location, Person $person): bool
+    public function isBlockedForLocation(?Location $location, Person $person): bool
     {
         if (is_null($location)) {
             return false;
         }
 
         return in_array($person, $location->blockedPeople, true);
+    }
+
+    public function isBlockedForAPerson(array $people, Person $personToCheck): bool
+    {
+        foreach ($people as $person) {
+            /** @var Person $person */
+            if ($person->isBlocked($personToCheck)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
