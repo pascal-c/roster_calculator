@@ -120,11 +120,16 @@ final class AvailabilityCheckerTest extends Unit
         $this->resultService->expects($this->never())->method($this->anything());
         $this->maxShiftsReachedChecker->expects($this->never())->method($this->anything());
 
-        $blockedPerson = $this->make(Person::class);
         $person1 = $this->make(Person::class);
-        $person2 = $this->make(Person::class, ['blockedPeople' => [$blockedPerson]]);
-        $this->assertFalse($this->availabilityChecker->isBlockedForAPerson([$person1], $blockedPerson));
-        $this->assertTrue($this->availabilityChecker->isBlockedForAPerson([$person1, $person2], $blockedPerson));
+        $person2 = $this->make(Person::class);
+        $person3 = $this->make(Person::class);
+        $person4 = $this->make(Person::class);
+        $person2->addBlockedPerson($person4);
+        $person4->addBlockedPerson($person3);
+        $this->assertFalse($this->availabilityChecker->isBlockedForAPerson([], $person4));
+        $this->assertFalse($this->availabilityChecker->isBlockedForAPerson([$person1], $person4));
+        $this->assertTrue($this->availabilityChecker->isBlockedForAPerson([$person1, $person2], $person4));
+        $this->assertTrue($this->availabilityChecker->isBlockedForAPerson([$person1, $person3], $person4));
     }
 
     #[DataProvider('isBlockedForLocationDataProvider')]

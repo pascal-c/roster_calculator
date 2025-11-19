@@ -75,7 +75,7 @@ class AvailabilityChecker
     {
         foreach ($people as $person) {
             /** @var Person $person */
-            if ($person->isBlocked($personToCheck)) {
+            if ($person->isBlocked($personToCheck) || $personToCheck->isBlocked($person)) {
                 return true;
             }
         }
