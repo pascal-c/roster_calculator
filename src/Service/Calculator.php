@@ -24,7 +24,7 @@ class Calculator
         $firstResult = $this->simpleCalculator->calculate($roster);
         $bestResult = $this->backTrackingCalculator->calculate(
             $roster,
-            array_reverse($roster->getShifts()),
+            $roster->getShifts(),
             $this->resultService->buildEmptyResult($roster),
             $firstResult,
         );
