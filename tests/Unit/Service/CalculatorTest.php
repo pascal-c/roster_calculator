@@ -54,7 +54,7 @@ final class CalculatorTest extends Unit
             ->willReturn($this->firstResult);
         $this->backTrackingCalculator
             ->method('calculate')
-            ->with($this->roster, [$shift2, $shift1], $this->emptyResult, $this->firstResult)
+            ->with($this->roster, [$shift1, $shift2], $this->emptyResult, $this->firstResult)
             ->willReturn($this->bestResult);
     }
 

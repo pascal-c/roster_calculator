@@ -4,6 +4,7 @@ namespace App\Service\Calculator;
 
 use App\Entity\Roster;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator;
+use App\Service\Calculator\RosterCalculator\ShiftSorter;
 use App\Service\ResultService;
 use App\Service\TimeService;
 
@@ -17,6 +18,7 @@ class BackTrackingCalculator
         private ResultService $resultService,
         private ShiftCalculator $shiftCalculator,
         private TimeService $timeService,
+        private ShiftSorter $shiftSorter,
     ) {
         $this->time = $this->timeService->unixTimestamp();
     }
@@ -28,7 +30,8 @@ class BackTrackingCalculator
             return $bestResult;
         }
 
-        $shift = array_pop($shifts);
+        $this->shiftSorter->sortByAvailabilities($currentResult, $shifts, $roster);
+        $shift = array_shift($shifts);
 
         $newResults = $this->shiftCalculator->calculateSortedResultsForShift($currentResult, $roster, $shift);
         foreach ($newResults as $newResult) {

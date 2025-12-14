@@ -8,6 +8,7 @@ use App\Entity\Roster;
 use App\Entity\Shift;
 use App\Service\Calculator\BackTrackingCalculator;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator;
+use App\Service\Calculator\RosterCalculator\ShiftSorter;
 use App\Service\ResultService;
 use App\Service\TimeService;
 use App\Value\Time\TimeSlotPeriod;
@@ -20,6 +21,7 @@ final class BackTrackingCalculaotorTest extends Unit
     private ResultService&MockObject $resultService;
     private ShiftCalculator&MockObject $shiftCalculator;
     private TimeService&MockObject $timeService;
+    private ShiftSorter&MockObject $shiftSorter;
 
     private Roster $roster;
     private Shift $shift1;
@@ -40,6 +42,7 @@ final class BackTrackingCalculaotorTest extends Unit
         $this->resultService = $this->createMock(ResultService::class);
         $this->shiftCalculator = $this->createMock(ShiftCalculator::class);
         $this->timeService = $this->createMock(TimeService::class);
+        $this->shiftSorter = $this->createMock(ShiftSorter::class);
     }
 
     public function testCalculate(): void
@@ -51,6 +54,7 @@ final class BackTrackingCalculaotorTest extends Unit
             $this->resultService,
             $this->shiftCalculator,
             $this->timeService,
+            $this->shiftSorter,
         );
         $this->resultService
             ->expects($this->exactly(8))
@@ -70,8 +74,9 @@ final class BackTrackingCalculaotorTest extends Unit
                 [['result1'], $this->roster, $this->shift2, [['result1.1'], ['result1.2']]],
                 [['result2'], $this->roster, $this->shift2, [['result2.1'], ['result2.2']]],
             ]);
+        $this->shiftSorter->expects($this->atLeastOnce())->method('sortByAvailabilities');
 
-        $result = $this->backTrackingCalculator->calculate($this->roster, [$this->shift2, $this->shift1], ['currentResult'], ['bestResult']);
+        $result = $this->backTrackingCalculator->calculate($this->roster, [$this->shift1, $this->shift2], ['currentResult'], ['bestResult']);
 
         $this->assertSame(['result1.1'], $result);
         $this->assertFalse($this->backTrackingCalculator->isTimedOut());
@@ -87,11 +92,15 @@ final class BackTrackingCalculaotorTest extends Unit
             $this->resultService,
             $this->shiftCalculator,
             $this->timeService,
+            $this->shiftSorter,
         );
         $this->resultService
             ->expects($this->never())
             ->method($this->anything());
         $this->shiftCalculator
+            ->expects($this->never())
+            ->method($this->anything());
+        $this->shiftSorter
             ->expects($this->never())
             ->method($this->anything());
 
