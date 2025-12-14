@@ -48,10 +48,10 @@ final class RosterCest
             'rating' => [
                 'missingPerson' => 100, // nobody assigned for date1
                 'maybePerson' => 1, // uta is only maybe available for date2
-                'targetShifts' => 16,  // sum of target shifts is 11, only 3 assigned (11-3)*2 = 16
+                'targetShifts' => 10,  // 0 for uta, 2 for erwin, 8 for unpopular-person
                 'maxPerWeek' => 0,
                 'locationPreferences' => 0, // no location preferences set
-                'total' => 117,
+                'total' => 111,
             ],
         ]);
     }
@@ -84,9 +84,9 @@ final class RosterCest
             'rating' => [
                 'missingPerson' => 1000, // nobody assigned for date1
                 'maybePerson' => 10, // uta is only maybe available for date2
-                'targetShifts' => 160, // sum of target shifts is 11, only 3 assigned (11-3)*20 = 160
+                'targetShifts' => 100, // 0 for uta, 20 for erwin, 80 for unpopular-person
                 'maxPerWeek' => 0,
-                'total' => 1170,
+                'total' => 1110,
             ],
         ]);
     }
@@ -148,7 +148,7 @@ final class RosterCest
                         'wishedShiftsPerMonth' => 4,
                         'maxShiftsPerMonth' => 6,
                         'maxShiftsPerDay' => 1,
-                        'targetShifts' => 3,
+                        'targetShifts' => 2,
                         'blockedPeopleIds' => ['unpopular-person'],
                     ],
                     'availabilities' => [
@@ -172,7 +172,7 @@ final class RosterCest
                         'maxShiftsPerMonth' => 6,
                         'maxShiftsPerDay' => 1,
                         'maxShiftsPerWeek' => 2,
-                        'targetShifts' => 4,
+                        'targetShifts' => 2,
                         'blockedPeopleIds' => ['unpopular-person'],
                     ],
                     'availabilities' => [
@@ -195,7 +195,7 @@ final class RosterCest
                         'wishedShiftsPerMonth' => 4,
                         'maxShiftsPerMonth' => 3,
                         'maxShiftsPerDay' => 2,
-                        'targetShifts' => 4,
+                        'targetShifts' => 2,
                     ],
                     'availabilities' => [
                         [

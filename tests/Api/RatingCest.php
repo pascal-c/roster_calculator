@@ -25,10 +25,10 @@ final class RatingCest
         $I->seeResponseContainsJson([
             'missingPerson' => 100, // one person missing for date1
             'maybePerson' => 1, // uta is only maybe available for date2
-            'targetShifts' => 8, // sum of target shifts is 7, only 3 assigned (7-3)*2 = 8
+            'targetShifts' => 20, // sum of target shifts is 7, only 3 assigned 2 points for uta + 3*3*2 for erwin = 20
             'maxPerWeek' => 0,
             'locationPreferences' => 6, // uta has 6 points for location1, erwin has location preference default points 1
-            'total' => 115,
+            'total' => 127,
         ]);
     }
 

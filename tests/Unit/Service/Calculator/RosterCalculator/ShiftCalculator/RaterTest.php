@@ -76,8 +76,8 @@ class RaterTest extends Unit
         $this->resultService->method('getShiftAssignments')->willReturn($shiftAssignments);
         $this->resultService->method('countShifts')->willReturn($resultShiftCount);
         $this->resultService->method('getCalculatedShifts')->willReturnMap([
-            [$result, $this->person1, 1],
-            [$result, $this->person2, 1], // targetShifts is 3 -> 4 points
+            [$result, $this->person1, 3], // targetShifts is 1 -> 2 * 2 * 2 = 8 points (+ 2 * 2 = 4 points when shifts are missing)
+            [$result, $this->person2, 1], // targetShifts is 3 -> 2 * 2 * 2 = 8 points
         ]);
         $this->resultService->method('countShiftsPerWeek')->willReturnMap([
             [$result, $this->person1, '2024-31', 3], // maxPerWeek is 1 -> 20 points
@@ -104,12 +104,12 @@ class RaterTest extends Unit
     {
         yield 'when all shifts are calculated' => [
             'resultShiftCount' => 3, // total shift count is 3
-            'expectedTargetPlayPoints' => 4,
+            'expectedTargetPlayPoints' => 16, // 8 (person1) + 8 (person2)
         ];
 
         yield 'when not all shifts are calculated yet' => [
             'resultShiftCount' => 2, // total shift count is 3
-            'expectedTargetPlayPoints' => 0,
+            'expectedTargetPlayPoints' => 12, // 12 (person1) + 0 (person2)
         ];
     }
 }

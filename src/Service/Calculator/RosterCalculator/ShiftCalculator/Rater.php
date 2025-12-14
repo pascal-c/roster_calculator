@@ -90,12 +90,15 @@ class Rater
     {
         $missingShifts = $roster->countShifts() - $this->resultService->countShifts($result);
         $diff = $this->resultService->getCalculatedShifts($result, $person) - $person->targetShifts;
+        $points = $diff * $diff * $roster->getRatingPointWeightings()->pointsPerTargetShiftsMissed;
 
-        if ($missingShifts > 0) { // when shifts are missing: only rate people who have too much plays, ignore it when they don't have enough (yet)
-            return max(0, $diff) * $roster->getRatingPointWeightings()->pointsPerTargetShiftsMissed;
+        if ($missingShifts > 0 && $diff <= 0) { // when shifts are missing: do not rate people who don't have enough shifts (yet) ...
+            return 0;
+        } elseif ($missingShifts > 0) { // ... but add additional rating points when the have too much plays -> others will have less at the end!
+            return $points + $diff * $roster->getRatingPointWeightings()->pointsPerTargetShiftsMissed;
         }
 
-        return abs($diff) * $roster->getRatingPointWeightings()->pointsPerTargetShiftsMissed;
+        return $points;
     }
 
     private function pointsForMaxPerWeekExceeded(Person $person, array $result, Roster $roster): int
