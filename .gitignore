@@ -21,3 +21,4 @@
 
 /bin/deploy.sh
 /bin/update.sh
+/config/reference.php
