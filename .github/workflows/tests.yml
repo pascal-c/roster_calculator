@@ -37,7 +37,6 @@ jobs:
       # DATABASE steps
       - name: setup database
         uses: ryohidaka/action-setup-sqlite@v1.1.0
-      - run: php bin/console doctrine:database:create --env=test
       - run: php bin/console doctrine:migration:migrate --env=test --no-interaction
 
       # tests
