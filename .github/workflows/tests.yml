@@ -1,0 +1,45 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # build
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        id: setup-php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+       # composer
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      - name: composer install
+        uses: php-actions/composer@v6
+        with:
+          php_version: '8.2'
+        env:
+          APP_ENV: test
+
+      # DATABASE steps
+      - name: setup database
+        uses: actions/setup-sqlite@v1
+      - run: php bin/console doctrine:database:create --env=test
+      - run: php bin/console doctrine:migration:migrate --env=test --no-interaction
+
+      # tests
+      - run: php vendor/bin/php-cs-fixer check
+      - run: php vendor/bin/codecept run
