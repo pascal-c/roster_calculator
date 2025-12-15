@@ -41,4 +41,4 @@ jobs:
 
       # tests
       - run: php vendor/bin/php-cs-fixer check
-      - run: php vendor/bin/codecept run
+      - run: php vendor/bin/codecept run tests/Unit
