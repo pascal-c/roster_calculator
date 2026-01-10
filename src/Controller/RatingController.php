@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Serializer\ResultSerializer;
 use App\Service\Calculator\RosterCalculator\ShiftCalculator\Rater;
 use App\Service\ResultService;
 use App\Service\RosterBuilder;
@@ -18,7 +17,6 @@ class RatingController extends AbstractController
 {
     public function __construct(
         private RosterBuilder $rosterBuilder,
-        private ResultSerializer $resultSerializer,
         private ResultService $resultService,
         private Rater $rater,
     ) {

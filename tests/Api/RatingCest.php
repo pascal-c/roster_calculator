@@ -8,7 +8,28 @@ use Tests\Support\ApiTester;
 
 final class RatingCest
 {
-    public function createWithFailure(ApiTester $I): void
+    public function _before(ApiTester $I): void
+    {
+        $I->amBearerAuthenticated('123');
+    }
+
+    public function ratingWithoutToken(ApiTester $I): void
+    {
+        $I->unsetHttpHeader('Authorization');
+        $I->sendPostAsJson('/v1/rating', $this->getPayload());
+        $I->seeResponseCodeIs(401);
+        $I->seeResponseEquals('"Unauthorized - Bearer Authentication required"');
+    }
+
+    public function ratingWithInvalidToken(ApiTester $I): void
+    {
+        $I->amBearerAuthenticated('invalid-token');
+        $I->sendPostAsJson('/v1/rating', $this->getPayload());
+        $I->seeResponseCodeIs(401);
+        $I->seeResponseEquals('"Unauthorized - invalid token"');
+    }
+
+    public function ratingWithInvalidPayload(ApiTester $I): void
     {
         $I->sendPostAsJson('/v1/rating', ['invalid' => 'payload']);
         $I->seeResponseCodeIs(422);
