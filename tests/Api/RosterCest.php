@@ -12,6 +12,19 @@ final class RosterCest
 {
     private string $id;
 
+    public function _before(ApiTester $I): void
+    {
+        $I->amBearerAuthenticated('123');
+    }
+
+    public function createWithInvalidToken(ApiTester $I): void
+    {
+        $I->amBearerAuthenticated('invalid-token');
+        $I->sendPostAsJson('/v1/roster', $this->getPayload());
+        $I->seeResponseCodeIs(401);
+        $I->seeResponseEquals('"Unauthorized - invalid token"');
+    }
+
     public function createWithFailure(ApiTester $I): void
     {
         $I->sendPostAsJson('/v1/roster', ['invalid' => 'payload']);
