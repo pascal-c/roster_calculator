@@ -158,8 +158,14 @@ components:
             - all
             - am
             - pm
-        personIds:
+        assignedPeople:
           type: array
+          description: IDs of people already assigned to this shift
+          items:
+            type: string
+        team:
+          type: array
+          description: IDs of people representing the team for this shift
           items:
             type: string
         locationId:
@@ -257,6 +263,7 @@ components:
         - pointsPerMaxPerWeekExceeded
         - pointsPerMaybePerson
         - pointsPerTargetShiftsMissed
+        - pointsPerPersonNotInTeam
       properties:
         pointsPerMissingPerson:
           type: integer
@@ -274,6 +281,10 @@ components:
           type: integer
           minimum: 0
           maximum: 1000
+        pointsPerPersonNotInTeam:
+          type: integer
+          minimum: 0
+          maximum: 1000
     Rating:
       type: object
       required:
@@ -282,6 +293,7 @@ components:
         - targetShifts
         - maxPerWeek
         - locationPreferences
+        - personNotInTeam
         - total
       properties:
         missingPerson:
@@ -293,6 +305,8 @@ components:
         maxPerWeek:
           type: integer
         locationPreferences:
+          type: integer
+        personNotInTeam:
           type: integer
         total:
           type: integer

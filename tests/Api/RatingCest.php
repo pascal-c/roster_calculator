@@ -49,7 +49,8 @@ final class RatingCest
             'targetShifts' => 20, // sum of target shifts is 7, only 3 assigned 2 points for uta + 3*3*2 for erwin = 20
             'maxPerWeek' => 0,
             'locationPreferences' => 6, // uta has 6 points for location1, erwin has location preference default points 1
-            'total' => 127,
+            'personNotInTeam' => 3, // uta is not in team for date2
+            'total' => 130,
         ]);
     }
 
@@ -66,14 +67,15 @@ final class RatingCest
                     'id' => 'date1 id',
                     'date' => '2021-01-01',
                     'daytime' => 'am',
-                    'personIds' => ['uta'],
+                    'assignedPeople' => ['uta'],
                     'locationId' => 'location1',
                 ],
                 [
                     'id' => 'date2 id',
                     'date' => '2021-01-02',
                     'daytime' => 'pm',
-                    'personIds' => ['erwin', 'uta'],
+                    'assignedPeople' => ['erwin', 'uta'],
+                    'team' => ['erwin'],
                 ],
             ],
             'people' => [

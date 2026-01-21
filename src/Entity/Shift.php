@@ -15,6 +15,7 @@ readonly class Shift
         public TimeSlotPeriod $timeSlotPeriod,
         public ?Location $location,
         public array $assignedPeople,
+        public array $team = [],
         public int $totalNeededPeople = 2,
     ) {
         $this->stillNeededPeople = $this->totalNeededPeople - count($this->assignedPeople);
