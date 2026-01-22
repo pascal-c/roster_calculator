@@ -145,7 +145,7 @@ components:
         - id
         - date
         - daytime
-        - person_ids
+        - assignedPeople
       properties:
         id:
           type: string
