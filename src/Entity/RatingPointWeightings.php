@@ -11,6 +11,7 @@ class RatingPointWeightings
         public readonly int $pointsPerMaxPerWeekExceeded = 10,
         public readonly int $pointsPerMaybePerson = 1,
         public readonly int $pointsPerTargetShiftsMissed = 2,
+        public readonly int $pointsPerPersonNotInTeam = 3,
     ) {
     }
 }

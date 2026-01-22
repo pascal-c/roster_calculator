@@ -64,7 +64,8 @@ final class RosterCest
                 'targetShifts' => 10,  // 0 for uta, 2 for erwin, 8 for unpopular-person
                 'maxPerWeek' => 0,
                 'locationPreferences' => 0, // no location preferences set
-                'total' => 111,
+                'personNotInTeam' => 3, // uta is not in team for date1
+                'total' => 114,
             ],
         ]);
     }
@@ -99,7 +100,8 @@ final class RosterCest
                 'maybePerson' => 10, // uta is only maybe available for date2
                 'targetShifts' => 100, // 0 for uta, 20 for erwin, 80 for unpopular-person
                 'maxPerWeek' => 0,
-                'total' => 1110,
+                'personNotInTeam' => 30, // uta is not in team for date1
+                'total' => 1140,
             ],
         ]);
     }
@@ -143,14 +145,16 @@ final class RosterCest
                     'id' => 'date1 id',
                     'date' => '2021-01-01',
                     'daytime' => 'am',
-                    'personIds' => ['uta'],
+                    'assignedPeople' => ['uta'],
                     'locationId' => 'location1',
+                    'team' => ['erwin'],
                 ],
                 [
                     'id' => 'date2 id',
                     'date' => '2021-01-02',
                     'daytime' => 'pm',
-                    'personIds' => ['erwin'],
+                    'assignedPeople' => ['erwin'],
+                    'team' => ['nicht-existenter-clown'], // gleiches Ergebnis wie kein Team
                 ],
             ],
             'people' => [
@@ -235,6 +239,7 @@ final class RosterCest
             'pointsPerMaxPerWeekExceeded' => 100,
             'pointsPerMaybePerson' => 10,
             'pointsPerTargetShiftsMissed' => 20,
+            'pointsPerPersonNotInTeam' => 30,
         ];
 
         return $payload;

@@ -32,6 +32,7 @@ class Rater
             'targetShifts' => 0,
             'maxPerWeek' => 0,
             'locationPreferences' => 0,
+            'personNotInTeam' => 0,
         ];
 
         $shiftAssignments = $this->resultService->getShiftAssignments($result);
@@ -41,6 +42,7 @@ class Rater
             $points['missingPerson'] += $this->pointsForMissingPerson($allAssignedPeople, $roster);
             $points['maybePerson'] += $this->pointsForMaybePerson($shift, $allAssignedPeople, $roster);
             $points['locationPreferences'] += $this->pointsForLocationPreferences($shift, $allAssignedPeople);
+            $points['personNotInTeam'] += $this->pointsForPersonNotInTeam($shift, $allAssignedPeople, $roster);
         }
 
         foreach ($roster->getPeople() as $person) {
@@ -81,6 +83,23 @@ class Rater
             /** @var Person $person */
             $locationPreference = $person->getLocationPreferenceFor($shift->location);
             $points += $locationPreference->points;
+        }
+
+        return $points;
+    }
+
+    private function pointsForPersonNotInTeam(Shift $shift, array $allAssignedPeople, Roster $roster): int
+    {
+        if (0 === count($shift->team)) {
+            return 0;
+        }
+
+        $points = 0;
+        foreach ($allAssignedPeople as $person) {
+            /** @var Person $person */
+            if (!in_array($person, $shift->team, true)) {
+                $points += $roster->getRatingPointWeightings()->pointsPerPersonNotInTeam;
+            }
         }
 
         return $points;

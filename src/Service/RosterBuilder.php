@@ -129,7 +129,11 @@ class RosterBuilder
     {
         $assignedPeople = array_map(
             fn (string $id): Person => $roster->getPerson($id),
-            $shiftPayload['personIds'] ?? [],
+            $shiftPayload['assignedPeople'] ?? [],
+        );
+        $team = array_map(
+            fn (string $id): ?Person => $roster->getPerson($id),
+            $shiftPayload['team'] ?? [],
         );
         $shift = new Shift(
             id: $shiftPayload['id'],
@@ -139,6 +143,7 @@ class RosterBuilder
             ),
             location: $roster->getLocation($shiftPayload['locationId'] ?? null),
             assignedPeople: $assignedPeople,
+            team: array_filter($team),
         );
 
         $roster->addShift($shift);
@@ -154,6 +159,7 @@ class RosterBuilder
                 pointsPerMaxPerWeekExceeded: $ratingPayload['pointsPerMaxPerWeekExceeded'],
                 pointsPerMaybePerson: $ratingPayload['pointsPerMaybePerson'],
                 pointsPerTargetShiftsMissed: $ratingPayload['pointsPerTargetShiftsMissed'],
+                pointsPerPersonNotInTeam: $ratingPayload['pointsPerPersonNotInTeam'],
             );
         }
 

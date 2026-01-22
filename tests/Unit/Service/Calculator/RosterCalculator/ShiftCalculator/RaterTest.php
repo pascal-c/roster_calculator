@@ -45,9 +45,19 @@ class RaterTest extends Unit
         $this->roster->addPerson($this->person1);
         $this->roster->addPerson($this->person2);
 
-        $this->shift1 = new Shift('shift1', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL), $location1, [$this->person2]);
-        $this->shift2 = new Shift('shift2', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-31'), TimeSlotPeriod::AM), null, []); // not assigned -> 100 points
-        $this->shift3 = new Shift('shift3', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-30'), TimeSlotPeriod::PM), null, [$this->person1]); // is only maybe available -> 1 point
+        $this->shift1 = new Shift('shift1', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL),
+            location: $location1,
+            assignedPeople: [$this->person2],
+            team: [$this->person2],
+        );
+        $this->shift2 = new Shift('shift2', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-31'), TimeSlotPeriod::AM),
+            location: null,
+            assignedPeople: [], // not assigned -> 100 points
+        );
+        $this->shift3 = new Shift('shift3', new TimeSlotPeriod(new \DateTimeImmutable('2024-07-30'), TimeSlotPeriod::PM),
+            location: null,
+            assignedPeople: [$this->person1], // is only maybe available -> 1 point
+        );
         $this->roster->addShift($this->shift1);
         $this->roster->addShift($this->shift2);
         $this->roster->addShift($this->shift3);
@@ -61,7 +71,7 @@ class RaterTest extends Unit
         $shiftAssignments = [
             'shift1' => [
                 'shift' => $this->shift1,
-                'addedPeople' => [$this->person1], // is only maybe available -> 1 point
+                'addedPeople' => [$this->person1], // is only maybe available -> 1 point + person1 is not in team -> 3 points
             ],
             'shift2' => [
                 'shift' => $this->shift2,
@@ -94,7 +104,8 @@ class RaterTest extends Unit
             'targetShifts' => $expectedTargetPlayPoints,
             'maxPerWeek' => 20,
             'locationPreferences' => 24, // 10 + 7 (shift1) + 2 (shift2) + 5 (shift3)
-            'total' => 246 + $expectedTargetPlayPoints,
+            'personNotInTeam' => 3,
+            'total' => 249 + $expectedTargetPlayPoints,
         ];
 
         $this->assertSame($expectedPoints, $points);
