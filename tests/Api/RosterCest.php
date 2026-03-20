@@ -53,10 +53,12 @@ final class RosterCest
             'assignments' => [
                 ['shiftId' => 'date1 id', 'personIds' => []],
                 ['shiftId' => 'date2 id', 'personIds' => ['uta']],
+                ['shiftId' => 'date3 id', 'personIds' => ['uta']],
             ],
             'personalResults' => [
-                ['personId' => 'uta', 'calculatedShifts' => 2],
-                ['personId' => 'erwin', 'calculatedShifts' => 1],
+                ['personId' => 'uta', 'calculatedShifts' => 3],
+                ['personId' => 'erwin', 'calculatedShifts' => 2],
+                ['personId' => 'unpopular-person', 'calculatedShifts' => 0],
             ],
             'rating' => [
                 'missingPerson' => 100, // nobody assigned for date1
@@ -89,10 +91,11 @@ final class RosterCest
             'assignments' => [
                 ['shiftId' => 'date1 id', 'personIds' => []],
                 ['shiftId' => 'date2 id', 'personIds' => ['uta']],
+                ['shiftId' => 'date3 id', 'personIds' => ['uta']],
             ],
             'personalResults' => [
-                ['personId' => 'uta', 'calculatedShifts' => 2],
-                ['personId' => 'erwin', 'calculatedShifts' => 1],
+                ['personId' => 'uta', 'calculatedShifts' => 3],
+                ['personId' => 'erwin', 'calculatedShifts' => 2],
                 ['personId' => 'unpopular-person', 'calculatedShifts' => 0],
             ],
             'rating' => [
@@ -156,6 +159,12 @@ final class RosterCest
                     'assignedPeople' => ['erwin'],
                     'team' => ['nicht-existenter-clown'], // gleiches Ergebnis wie kein Team
                 ],
+                [
+                    'id' => 'date3 id',
+                    'date' => '2021-01-02',
+                    'daytime' => 'am',
+                    'assignedPeople' => ['erwin'],
+                ],
             ],
             'people' => [
                 [
@@ -164,13 +173,18 @@ final class RosterCest
                     'constraints' => [
                         'wishedShiftsPerMonth' => 4,
                         'maxShiftsPerMonth' => 6,
-                        'maxShiftsPerDay' => 1,
-                        'targetShifts' => 2,
+                        'maxShiftsPerDay' => 2,
+                        'targetShifts' => 3,
                         'blockedPeopleIds' => ['unpopular-person'],
                     ],
                     'availabilities' => [
                         [
                             'date' => '2021-01-01',
+                            'daytime' => 'am',
+                            'availability' => 'yes',
+                        ],
+                        [
+                            'date' => '2021-01-02',
                             'daytime' => 'am',
                             'availability' => 'yes',
                         ],
@@ -187,9 +201,9 @@ final class RosterCest
                     'constraints' => [
                         'wishedShiftsPerMonth' => 4,
                         'maxShiftsPerMonth' => 6,
-                        'maxShiftsPerDay' => 1,
+                        'maxShiftsPerDay' => 2,
                         'maxShiftsPerWeek' => 2,
-                        'targetShifts' => 2,
+                        'targetShifts' => 3,
                         'blockedPeopleIds' => ['unpopular-person'],
                     ],
                     'availabilities' => [

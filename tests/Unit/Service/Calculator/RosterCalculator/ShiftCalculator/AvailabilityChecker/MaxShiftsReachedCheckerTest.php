@@ -13,80 +13,62 @@ use Codeception\Test\Unit;
 final class MaxShiftsReachedCheckerTest extends Unit
 {
     #[DataProvider('dayDataProvider')]
-    public function testMaxShiftsPerDayReached(int $maxShiftsPerDay, bool $expectedResult): void
+    public function testCanTakeNShiftsForDay(int $maxShiftsPerDay, int $n, int $alreadyAssignedShiftsForDay, bool $expectedResult): void
     {
         $day = '2024-07-24';
         $person = $this->make(Person::class, [
             'id' => 'p1',
             'maxShiftsPerDay' => $maxShiftsPerDay,
         ]);
-        $result = ['anything'];
+        $result = ['result'];
 
         $resultService = $this->createMock(ResultService::class);
         $resultService->method('countShiftsPerDay')
             ->with($result, $person, $day)
-            ->willReturn(1);
+            ->willReturn($alreadyAssignedShiftsForDay);
 
         $maxShiftsReachedChecker = new MaxShiftsReachedChecker($resultService);
-        $reached = $maxShiftsReachedChecker->maxShiftsPerDayReached($day, $person, $result);
+        $reached = $maxShiftsReachedChecker->canTakeNShiftsForDay($day, $person, $result, n: $n);
 
         $this->assertSame($expectedResult, $reached);
     }
 
     public function dayDataProvider(): \Generator
     {
-        yield 'when person has 1 maxShiftsPerDay' => [
+        yield 'with maxShiftsPerDay=1 n=1 alreadyAssignedShiftsForDay=1' => [
             'maxShiftsPerDay' => 1,
+            'n' => 1,
+            'alreadyAssignedShiftsForDay' => 1,
+            'expectedResult' => false,
+        ];
+        yield 'with maxShiftsPerDay=1 n=1 alreadyAssignedShiftsForDay=0' => [
+            'maxShiftsPerDay' => 1,
+            'n' => 1,
+            'alreadyAssignedShiftsForDay' => 0,
             'expectedResult' => true,
         ];
-        yield 'when person has 2 maxShiftsPerDay' => [
+        yield 'with maxShiftsPerDay=2 n=1 alreadyAssignedShiftsForDay=1' => [
             'maxShiftsPerDay' => 2,
-            'expectedResult' => false,
-        ];
-    }
-
-    #[DataProvider('weekDataProvider')]
-    public function testMaxShiftsPerWeekReached(?int $maxShiftsPerWeek, bool $expectedResult): void
-    {
-        $weekId = '2024-07';
-        $person = $this->make(Person::class, [
-            'id' => 'p1',
-            'maxShiftsPerWeek' => $maxShiftsPerWeek,
-        ]);
-        $result = ['anything'];
-
-        $resultService = $this->createMock(ResultService::class);
-        $resultService->method('countShiftsPerWeek')
-            ->with($result, $person, $weekId)
-            ->willReturn(2);
-        $maxShiftsReachedChecker = new MaxShiftsReachedChecker($resultService);
-
-        $reached = $maxShiftsReachedChecker->maxShiftsPerWeekReached($weekId, $person, $result);
-        $this->assertSame($expectedResult, $reached);
-    }
-
-    public function weekDataProvider(): \Generator
-    {
-        yield 'when person has no max given' => [
-            'maxShiftsPerWeek' => null,
-            'expectedResult' => false,
-        ];
-        yield 'when person has 3 maxShiftsPerWeek' => [
-            'maxShiftsPerWeek' => 3,
-            'expectedResult' => false,
-        ];
-        yield 'when person has 2 maxShiftsPerWeek' => [
-            'maxShiftsPerWeek' => 2,
+            'n' => 1,
+            'alreadyAssignedShiftsForDay' => 1,
             'expectedResult' => true,
         ];
-        yield 'when person has 1 maxShiftsPerWeek' => [
-            'maxShiftsPerWeek' => 1,
+        yield 'with maxShiftsPerDay=2 n=2 alreadyAssignedShiftsForDay=1' => [
+            'maxShiftsPerDay' => 2,
+            'n' => 2,
+            'alreadyAssignedShiftsForDay' => 1,
+            'expectedResult' => false,
+        ];
+        yield 'with maxShiftsPerDay=2 n=2 alreadyAssignedShiftsForDay=0' => [
+            'maxShiftsPerDay' => 2,
+            'n' => 2,
+            'alreadyAssignedShiftsForDay' => 0,
             'expectedResult' => true,
         ];
     }
 
     #[DataProvider('monthDataProvider')]
-    public function testMaxShiftsPerMonthReached(int $maxShiftsPerMonth, bool $expectedResult): void
+    public function testCanTakeNShiftsForMonth(int $maxShiftsPerMonth, int $n, int $alreadyAssignedShiftsForMonth, bool $expectedResult): void
     {
         $person = $this->make(Person::class, [
             'id' => 'p1',
@@ -98,26 +80,32 @@ final class MaxShiftsReachedCheckerTest extends Unit
         $resultService->expects($this->once())
             ->method('getCalculatedShifts')
             ->with($result, $person)
-            ->willReturn(2);
+            ->willReturn($alreadyAssignedShiftsForMonth);
         $maxShiftsReachedChecker = new MaxShiftsReachedChecker($resultService);
 
-        $reached = $maxShiftsReachedChecker->maxShiftsPerMonthReached($person, $result);
+        $reached = $maxShiftsReachedChecker->canTakeNShiftsForMonth($person, $result, n: $n);
         $this->assertSame($expectedResult, $reached);
     }
 
     public function monthDataProvider(): \Generator
     {
-        yield 'when person has 3 maxShiftsPerMonth' => [
+        yield 'with maxShiftsPerMonth=3 n=1 alreadyAssignedShiftsForMonth=2' => [
             'maxShiftsPerMonth' => 3,
+            'n' => 1,
+            'alreadyAssignedShiftsForMonth' => 2,
+            'expectedResult' => true,
+        ];
+        yield 'with maxShiftsPerMonth=3 n=2 alreadyAssignedShiftsForMonth=2' => [
+            'maxShiftsPerMonth' => 3,
+            'n' => 2,
+            'alreadyAssignedShiftsForMonth' => 2,
             'expectedResult' => false,
         ];
-        yield 'when person has 2 maxShiftsPerMonth' => [
-            'maxShiftsPerMonth' => 2,
-            'expectedResult' => true,
-        ];
-        yield 'when person has 1 maxShiftsPerMonth' => [
-            'maxShiftsPerMonth' => 1,
-            'expectedResult' => true,
+        yield 'with maxShiftsPerMonth=3 n=1 alreadyAssignedShiftsForMonth=3' => [
+            'maxShiftsPerMonth' => 3,
+            'n' => 1,
+            'alreadyAssignedShiftsForMonth' => 3,
+            'expectedResult' => false,
         ];
     }
 }

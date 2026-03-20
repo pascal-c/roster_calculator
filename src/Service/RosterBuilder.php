@@ -64,6 +64,10 @@ class RosterBuilder
             $this->addShift($shiftPayload, $roster);
         }
 
+        foreach ($roster->getShifts() as $shift) {
+            $this->addBundledShifts($shift, $roster);
+        }
+
         $this->setRatingPointWeightings($payload['ratingPointWeightings'] ?? [], $roster);
     }
 
@@ -144,9 +148,21 @@ class RosterBuilder
             location: $roster->getLocation($shiftPayload['locationId'] ?? null),
             assignedPeople: $assignedPeople,
             team: array_filter($team),
+            bundleId: $shiftPayload['bundleId'] ?? null,
         );
 
         $roster->addShift($shift);
+    }
+
+    private function addBundledShifts(Shift $shift, Roster $roster): void
+    {
+        if (!empty($shift->bundleId)) {
+            foreach ($roster->getShifts() as $bundledShift) {
+                if ($bundledShift->bundleId === $shift->bundleId && $bundledShift->id !== $shift->id) {
+                    $shift->bundledShifts[] = $bundledShift;
+                }
+            }
+        }
     }
 
     private function setRatingPointWeightings(array $ratingPayload, Roster $roster): void

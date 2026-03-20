@@ -11,23 +11,13 @@ class MaxShiftsReachedChecker
     {
     }
 
-    public function maxShiftsPerMonthReached(Person $person, array $result): bool
+    public function canTakeNShiftsForMonth(Person $person, array $result, int $n): bool
     {
-        return $this->resultService->getCalculatedShifts($result, $person) >= $person->maxShiftsPerMonth;
+        return $person->maxShiftsPerMonth - $this->resultService->getCalculatedShifts($result, $person) >= $n;
     }
 
-    public function maxShiftsPerWeekReached(string $weekId, Person $person, array $result): bool
+    public function canTakeNShiftsForDay(string $dateIndex, Person $person, array $result, int $n): bool
     {
-        $softMaxShiftsWeek = $person->maxShiftsPerWeek;
-        if (is_null($softMaxShiftsWeek) /* || !$this->configRepository->isFeatureMaxPerWeekActive() */) {
-            return false;
-        }
-
-        return $this->resultService->countShiftsPerWeek($result, $person, $weekId) >= $softMaxShiftsWeek;
-    }
-
-    public function maxShiftsPerDayReached(string $dateIndex, Person $person, array $result): bool
-    {
-        return $this->resultService->countShiftsPerDay($result, $person, $dateIndex) >= $person->maxShiftsPerDay;
+        return $person->maxShiftsPerDay - $this->resultService->countShiftsPerDay($result, $person, $dateIndex) >= $n;
     }
 }

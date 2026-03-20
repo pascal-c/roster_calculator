@@ -26,13 +26,21 @@ final class ShiftCalculaotorTest extends Unit
 
     private Roster $roster;
     private Shift $shift;
+    private Shift $bundledShift;
 
     public function _before(): void
     {
         // data
-        $this->shift = $this->make(Shift::class, [
+        $this->bundledShift = $this->make(Shift::class, [
+            'id' => '2',
             'stillNeededPeople' => 2,
-            'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::AM)]
+            'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::PM)],
+        );
+        $this->shift = $this->make(Shift::class, [
+            'id' => '1',
+            'stillNeededPeople' => 2,
+            'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::AM),
+            'bundledShifts' => [$this->bundledShift]]
         );
         $this->person1 = $this->make(Person::class, ['id' => 1]);
         $this->person2 = $this->make(Person::class, ['id' => 2]);
@@ -91,15 +99,23 @@ final class ShiftCalculaotorTest extends Unit
                 [$this->shift, $this->person4, ['result person2'], true],
             ]);
         $this->resultService
-            ->expects($this->exactly(6))
+            ->expects($this->exactly(12))
             ->method('add')
             ->willReturnMap([
-                [['startResult'], $this->shift, null, ['result nobody']],
-                [['result nobody'], $this->shift, $this->person1, ['result person1']],
-                [['result nobody'], $this->shift, $this->person2, ['result person2']],
-                [['result nobody'], $this->shift, $this->person4, ['result person4']],
-                [['result person1'], $this->shift, $this->person2, ['result person1 person2']],
-                [['result person2'], $this->shift, $this->person4, ['result person2 person4']],
+                [['startResult'], $this->shift, null, ['result nobody before bundled']],
+                [['result nobody'], $this->shift, $this->person1, ['result person1 before bundled']],
+                [['result nobody'], $this->shift, $this->person2, ['result person2 before bundled']],
+                [['result nobody'], $this->shift, $this->person4, ['result person4 before bundled']],
+                [['result person1'], $this->shift, $this->person2, ['result person1 person2 before bundled']],
+                [['result person2'], $this->shift, $this->person4, ['result person2 person4 before bundled']],
+
+                // maps for bundled shift
+                [['result nobody before bundled'], $this->bundledShift, null, ['result nobody']],
+                [['result person1 before bundled'], $this->bundledShift, $this->person1, ['result person1']],
+                [['result person2 before bundled'], $this->bundledShift, $this->person2, ['result person2']],
+                [['result person4 before bundled'], $this->bundledShift, $this->person4, ['result person4']],
+                [['result person1 person2 before bundled'], $this->bundledShift, $this->person2, ['result person1 person2']],
+                [['result person2 person4 before bundled'], $this->bundledShift, $this->person4, ['result person2 person4']],
             ]);
         $this->resultService
             ->method('getLastAddedPerson')

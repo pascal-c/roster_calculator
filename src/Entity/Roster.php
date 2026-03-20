@@ -35,6 +35,7 @@ class Roster
 
     private array $locations = [];
     private array $shifts = [];
+    private array $shiftsWithIndex = [];
     private array $people = [];
     private RatingPointWeightings $ratingPointWeightings;
 
@@ -141,6 +142,7 @@ class Roster
     public function addShift(Shift $shift): static
     {
         $this->shifts[] = $shift;
+        $this->shiftsWithIndex[$shift->id] = $shift;
         ++$this->shiftCount;
         if (!in_array($shift->timeSlotPeriod->weekId, $this->weekIds)) {
             $this->weekIds[] = $shift->timeSlotPeriod->weekId;
@@ -152,6 +154,11 @@ class Roster
     public function getShifts(): array
     {
         return $this->shifts;
+    }
+
+    public function getShift(string $id): ?Shift
+    {
+        return $this->shiftsWithIndex[$id] ?? null;
     }
 
     public function countShifts(): int

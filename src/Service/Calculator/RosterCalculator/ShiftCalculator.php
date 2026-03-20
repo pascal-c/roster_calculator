@@ -70,6 +70,11 @@ class ShiftCalculator
     private function add(array $result, Roster $roster, Shift $shift, ?Person $person): array
     {
         $newResult = $this->resultService->add($result, $shift, $person);
+        // add same person to bundled shifts
+        foreach ($shift->bundledShifts as $bundledShift) {
+            $newResult = $this->resultService->add($newResult, $bundledShift, $person);
+        }
+
         $this->resultService->setRating($newResult, $this->rater->calculatePoints($newResult, $roster));
 
         return $newResult;
