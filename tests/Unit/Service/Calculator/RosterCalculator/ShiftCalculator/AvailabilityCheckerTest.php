@@ -14,6 +14,7 @@ use App\Value\Gender;
 use App\Value\Time\TimeSlotPeriod;
 use Codeception\Attribute\DataProvider;
 use Codeception\Stub;
+use Codeception\Stub\Expected;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -161,8 +162,16 @@ final class AvailabilityCheckerTest extends Unit
     }
 
     #[DataProvider('isAvailableForDataProvider')]
-    public function testIsAvailableFor(bool $isAvailableOn, bool $isAlreadyAssignedWithin, bool $isBlockedForLocation, bool $isBlockedForAPerson, bool $maxShiftsPerMonthReached, bool $maxShiftsPerDayReached, bool $onlyMen, bool $expectedResult): void
-    {
+    public function testIsAvailableFor(
+        bool $isAvailableOn,
+        bool $isAlreadyAssignedWithin,
+        bool $isBlockedForLocation,
+        bool $isBlockedForAPerson,
+        bool $canTakeNShiftsForMonth,
+        bool $canTakeNShiftsForDay,
+        bool $onlyMen,
+        bool $expectedResult,
+    ): void {
         $person = $this->make(Person::class, ['id' => '1', 'isAvailableOn' => $isAvailableOn]);
         $shift = $this->make(Shift::class, [
             'location' => new Location('1'),
@@ -186,13 +195,13 @@ final class AvailabilityCheckerTest extends Unit
         $availabilityChecker->method('onlyMen')->with($this->result, $shift, $person);
 
         $this->maxShiftsReachedChecker
-            ->method('maxShiftsPerMonthReached')
-            ->with($person, $this->result)
-            ->willReturn($maxShiftsPerMonthReached);
+            ->method('canTakeNShiftsForMonth')
+            ->with($person, $this->result, 1)
+            ->willReturn($canTakeNShiftsForMonth);
         $this->maxShiftsReachedChecker
-            ->method('maxShiftsPerDayReached')
-            ->with($shift->timeSlotPeriod->dateIndex, $person, $this->result)
-            ->willReturn($maxShiftsPerDayReached);
+            ->method('canTakeNShiftsForDay')
+            ->with($shift->timeSlotPeriod->dateIndex, $person, $this->result, 1)
+            ->willReturn($canTakeNShiftsForDay);
 
         $this->assertSame($expectedResult, $availabilityChecker->isAvailableFor($shift, $person, $this->result));
     }
@@ -204,8 +213,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => false,
             'expectedResult' => true,
         ];
@@ -214,8 +223,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
@@ -224,8 +233,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => true,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
@@ -234,8 +243,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => true,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
@@ -244,8 +253,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => true,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
@@ -254,8 +263,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => true,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => false,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
@@ -264,8 +273,8 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => true,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => false,
             'onlyMen' => false,
             'expectedResult' => false,
         ];
@@ -274,10 +283,73 @@ final class AvailabilityCheckerTest extends Unit
             'isAlreadyAssignedWithin' => false,
             'isBlockedForLocation' => false,
             'isBlockedForAPerson' => false,
-            'maxShiftsPerMonthReached' => false,
-            'maxShiftsPerDayReached' => false,
+            'canTakeNShiftsForMonth' => true,
+            'canTakeNShiftsForDay' => true,
             'onlyMen' => true,
             'expectedResult' => false,
+        ];
+    }
+
+    #[DataProvider('isAvailableForWithBundledShiftDataProvider')]
+    public function testIsAvailableForWithBundledShift(
+        string $bundledShiftDate = '2024-07-24',
+        int $expectedShiftPerDayCount = 2,
+        bool $isAvailableForShift1 = true,
+        bool $isAvailableForShift2 = true,
+        bool $expectedResult = true,
+    ): void {
+        $person = $this->make(Person::class, ['id' => '1']);
+        $shift = $this->make(Shift::class, [
+            'id' => 'shift1',
+            'location' => new Location('1'),
+            'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable('2024-07-24'), TimeSlotPeriod::ALL),
+            'bundledShifts' => [$this->make(Shift::class, [
+                'id' => 'shift2',
+                'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable($bundledShiftDate), TimeSlotPeriod::PM),
+            ])],
+        ]);
+
+        $availabilityChecker = $this->make(AvailabilityChecker::class,
+            [
+                'isAvailableForOne' => Expected::atLeastOnce(function (
+                    Shift $shift,
+                    Person $givenPerson,
+                    array $result,
+                    int $shiftPerMonthCount,
+                    int $shiftPerDayCount,
+                ) use ($person, $expectedShiftPerDayCount, $isAvailableForShift1, $isAvailableForShift2) {
+                    $this->assertSame(2, $shiftPerMonthCount);
+                    $this->assertSame($expectedShiftPerDayCount, $shiftPerDayCount);
+                    $this->assertSame($person, $givenPerson);
+                    $this->assertSame($this->result, $result);
+
+                    return ('shift1' === $shift->id) ? $isAvailableForShift1 : $isAvailableForShift2;
+                }),
+            ],
+        );
+
+        $this->assertSame($expectedResult, $availabilityChecker->isAvailableFor($shift, $person, $this->result));
+    }
+
+    public function isAvailableForWithBundledShiftDataProvider(): \Generator
+    {
+        yield 'when person is available for both shifts' => [
+            'expectedResult' => true,
+        ];
+
+        yield 'when person is not available for first shifts' => [
+            'isAvailableForShift1' => false,
+            'expectedResult' => false,
+        ];
+
+        yield 'when person is not available for second shifts' => [
+            'isAvailableForShift2' => false,
+            'expectedResult' => false,
+        ];
+
+        yield 'when date is different' => [
+            'bundledShiftDate' => '2024-07-25',
+            'expectedShiftPerDayCount' => 1,
         ];
     }
 }

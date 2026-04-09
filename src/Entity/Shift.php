@@ -6,17 +6,20 @@ namespace App\Entity;
 
 use App\Value\Time\TimeSlotPeriod;
 
-readonly class Shift
+class Shift
 {
-    public int $stillNeededPeople;
+    public readonly int $stillNeededPeople;
+    /** @var array<Shift> */
+    public array $bundledShifts = [];
 
     public function __construct(
-        public string $id,
-        public TimeSlotPeriod $timeSlotPeriod,
-        public ?Location $location,
-        public array $assignedPeople,
-        public array $team = [],
-        public int $totalNeededPeople = 2,
+        public readonly string $id,
+        public readonly TimeSlotPeriod $timeSlotPeriod,
+        public readonly ?Location $location,
+        public readonly array $assignedPeople,
+        public readonly array $team = [],
+        public readonly int $totalNeededPeople = 2,
+        public readonly ?string $bundleId = null,
     ) {
         $this->stillNeededPeople = $this->totalNeededPeople - count($this->assignedPeople);
     }

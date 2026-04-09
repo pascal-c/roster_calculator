@@ -30,8 +30,8 @@ final class BackTrackingCalculaotorTest extends Unit
     public function _before(): void
     {
         // data
-        $this->shift1 = $this->make(Shift::class, ['timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::AM)]);
-        $this->shift2 = $this->make(Shift::class, ['timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::PM)]);
+        $this->shift1 = $this->make(Shift::class, ['id' => '1', 'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::AM)]);
+        $this->shift2 = $this->make(Shift::class, ['id' => '2', 'timeSlotPeriod' => new TimeSlotPeriod(new \DateTimeImmutable(), TimeSlotPeriod::PM)]);
 
         $this->roster = new Roster();
         $this->roster

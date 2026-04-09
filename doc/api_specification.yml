@@ -170,6 +170,9 @@ components:
             type: string
         locationId:
           type: string
+        bundleId:
+          type: string
+          description: ID of bundle this shift belongs to. Shifts in the same bundle will always be assigned to the same people.
     Person:
       type: object
       required:

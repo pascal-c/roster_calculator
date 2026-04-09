@@ -19,13 +19,31 @@ class AvailabilityChecker
 
     public function isAvailableFor(Shift $shift, Person $person, array $result): bool
     {
+        $shifts = [$shift];
+        foreach ($shift->bundledShifts as $bundledShift) {
+            $shifts[] = $bundledShift;
+        }
+
+        $shiftPerMonthCount = count($shifts);
+        $dates = array_map(fn (Shift $shift) => $shift->timeSlotPeriod->dateIndex, $shifts);
+        $uniqueDates = array_unique($dates);
+        $shiftPerDayCount = count($uniqueDates) !== count($dates) ? 2 : 1;
+
+        return array_reduce($shifts, fn (bool $carry, Shift $shift) => $carry && $this->isAvailableForOne($shift, $person, $result, $shiftPerMonthCount, $shiftPerDayCount), true);
+    }
+
+    /**
+     * should be private but is public for testing purposes.
+     */
+    public function isAvailableForOne(Shift $shift, Person $person, array $result, int $shiftPerMonthCount, int $shiftPerDayCount): bool
+    {
         return
             $person->isAvailableOn($shift->timeSlotPeriod)
             && !$this->isAlreadyAssignedWithin($result, $person, $shift->timeSlotPeriod)
             && !$this->isBlockedForLocation($shift->location, $person)
             && !$this->isBlockedForAPerson($this->resultService->getAllAssignedPeople($result, $shift), $person)
-            && !$this->maxShiftsReachedChecker->maxShiftsPerMonthReached($person, $result)
-            && !$this->maxShiftsReachedChecker->maxShiftsPerDayReached($shift->timeSlotPeriod->dateIndex, $person, $result)
+            && $this->maxShiftsReachedChecker->canTakeNShiftsForMonth($person, $result, n: $shiftPerMonthCount)
+            && $this->maxShiftsReachedChecker->canTakeNShiftsForDay($shift->timeSlotPeriod->dateIndex, $person, $result, n: $shiftPerDayCount)
             && !$this->onlyMen($result, $shift, $person)
         ;
     }
