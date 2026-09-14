@@ -3,6 +3,7 @@
 namespace Tests\Unit\Entity;
 
 use App\Entity\Location;
+use App\Entity\OtherDate;
 use App\Entity\Person;
 use App\Entity\Roster;
 use App\Entity\Shift;
@@ -53,5 +54,13 @@ class RosterTest extends \Codeception\Test\Unit
         $location = Stub::makeEmpty(Location::class, ['id' => '72']);
         $roster->addLocation($location);
         $this->assertSame($location, $roster->getLocation('72'));
+    }
+
+    public function testAddOtherDate()
+    {
+        $roster = new Roster();
+        $otherDate = Stub::makeEmpty(OtherDate::class, ['id' => '1']);
+        $roster->addOtherDate($otherDate);
+        $this->assertSame($otherDate, $roster->getOtherDates()[0]);
     }
 }

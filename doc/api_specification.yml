@@ -78,14 +78,22 @@ components:
       properties:
         locations:
           type: array
+          description: Locations where shifts take place. People can have preferences for locations and locations can have blocked people.
           items:
             $ref: '#/components/schemas/Location'
         shifts:
           type: array
+          description: Shifts that need to be assigned to people. Each shift can have a team and already assigned people.
           items:
-            $ref: '#/components/schemas/Shift'
+            $ref: '#/components/schemas/Event'
+        otherDates:
+          type: array
+          description: Dates that are not shifts but should be considered for availability (e.g. holidays, company events, etc.)
+          items:
+            $ref: '#/components/schemas/Event'
         people:
           type: array
+          description: People that can be assigned to shifts. Each person has constraints and availabilities.
           items:
             $ref: '#/components/schemas/Person'
         ratingPointWeightings:
@@ -139,7 +147,7 @@ components:
           type: integer
         isTimeout:
           type: boolean
-    Shift:
+    Event:
       type: object
       required:
         - id
