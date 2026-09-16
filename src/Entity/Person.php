@@ -30,6 +30,11 @@ class Person
         $this->availabilities[$availability->timeSlot->dateIndex][$availability->timeSlot->daytime] = $availability;
     }
 
+    public function setAvailability(Availability $availability): void
+    {
+        $this->addAvailability($availability);
+    }
+
     public function isAvailableOn(TimeSlotPeriod $timeSlotPeriod): bool
     {
         return Availability::NO !== $this->getAvailabilityOn($timeSlotPeriod);

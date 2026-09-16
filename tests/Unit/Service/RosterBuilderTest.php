@@ -187,6 +187,65 @@ final class RosterBuilderTest extends Unit
         $this->assertSame(TimeSlotPeriod::AM, $shift->timeSlotPeriod->daytime);
     }
 
+    public function testBuildNewWithOtherDatesAddsOtherDatesToRoster(): void
+    {
+        // data
+        $date = new \DateTimeImmutable('2024-01-01');
+        $payload = [
+            'people' => [
+                [
+                    'id' => 'person1',
+                    'gender' => 'male',
+                    'constraints' => [
+                        'wishedShiftsPerMonth' => 4,
+                        'maxShiftsPerMonth' => 6,
+                        'maxShiftsPerDay' => 1,
+                        'targetShifts' => 5,
+                        'blockedPeopleIds' => [],
+                        'locationPreferences' => [],
+                    ],
+                    'availabilities' => [
+                        [
+                            'date' => $date->format('Y-m-d'),
+                            'daytime' => TimeSlot::AM,
+                            'availability' => Availability::YES,
+                        ],
+                    ],
+                ],
+            ],
+            'locations' => [
+                [
+                    'id' => 'location1',
+                    'blockedPeopleIds' => [],
+                ],
+            ],
+            'shifts' => [],
+            'otherDates' => [
+                [
+                    'id' => 'otherDate1',
+                    'date' => $date->format('Y-m-d'),
+                    'daytime' => TimeSlotPeriod::AM,
+                    'locationId' => 'location1',
+                    'assignedPeople' => ['person1'],
+                ],
+            ],
+            'ratingPointWeightings' => [],
+        ];
+
+        // execute
+        $roster = $this->rosterBuilder->buildNew($payload);
+
+        // assertions
+        $this->assertCount(1, $roster->getOtherDates());
+        $otherDate = $roster->getOtherDates()[0];
+        $this->assertSame('otherDate1', $otherDate->id);
+        $this->assertSame(TimeSlotPeriod::AM, $otherDate->timeSlotPeriod->daytime);
+        $this->assertEquals($date, $otherDate->timeSlotPeriod->date);
+        $this->assertCount(1, $otherDate->assignedPeople);
+        $this->assertSame('person1', $otherDate->assignedPeople[0]->id);
+        $this->assertFalse($otherDate->assignedPeople[0]->isAvailableOn($otherDate->timeSlotPeriod));
+    }
+
     public function testBuildNewWithLocationPreferencesAddsPreferencesToPerson(): void
     {
         // data

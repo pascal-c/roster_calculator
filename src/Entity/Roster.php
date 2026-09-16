@@ -34,8 +34,16 @@ class Roster
     private ?\DateTimeImmutable $completedAt = null;
 
     private array $locations = [];
+
+    /** @var array<Shift> */
     private array $shifts = [];
+
+    /** @var array<string, Shift> */
     private array $shiftsWithIndex = [];
+
+    /** @var array<OtherDate> */
+    private array $otherDates = [];
+
     private array $people = [];
     private RatingPointWeightings $ratingPointWeightings;
 
@@ -164,6 +172,18 @@ class Roster
     public function countShifts(): int
     {
         return $this->shiftCount;
+    }
+
+    public function addOtherDate(OtherDate $otherDate): static
+    {
+        $this->otherDates[] = $otherDate;
+
+        return $this;
+    }
+
+    public function getOtherDates(): array
+    {
+        return $this->otherDates;
     }
 
     public function getWeekIds(): array

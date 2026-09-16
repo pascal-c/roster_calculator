@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Availability;
 use App\Entity\Location;
 use App\Entity\LocationPreference;
+use App\Entity\OtherDate;
 use App\Entity\Person;
 use App\Entity\RatingPointWeightings;
 use App\Entity\Roster;
@@ -66,6 +67,10 @@ class RosterBuilder
 
         foreach ($roster->getShifts() as $shift) {
             $this->addBundledShifts($shift, $roster);
+        }
+
+        foreach ($payload['otherDates'] ?? [] as $otherDatePayload) {
+            $this->addOtherDate($otherDatePayload, $roster);
         }
 
         $this->setRatingPointWeightings($payload['ratingPointWeightings'] ?? [], $roster);
@@ -161,6 +166,35 @@ class RosterBuilder
                 if ($bundledShift->bundleId === $shift->bundleId && $bundledShift->id !== $shift->id) {
                     $shift->bundledShifts[] = $bundledShift;
                 }
+            }
+        }
+    }
+
+    private function addOtherDate(array $otherDatePayload, Roster $roster): void
+    {
+        $assignedPeople = array_map(
+            fn (string $id): Person => $roster->getPerson($id),
+            $otherDatePayload['assignedPeople'] ?? [],
+        );
+        $otherDate = new OtherDate(
+            id: $otherDatePayload['id'],
+            timeSlotPeriod: new TimeSlotPeriod(
+                date: new \DateTimeImmutable($otherDatePayload['date']),
+                daytime: $otherDatePayload['daytime'],
+            ),
+            location: $roster->getLocation($otherDatePayload['locationId'] ?? null),
+            assignedPeople: $assignedPeople,
+        );
+
+        $roster->addOtherDate($otherDate);
+
+        // Set the availability of the assigned people to NO for the time slots of the other date
+        foreach ($assignedPeople as $person) {
+            foreach ($otherDate->timeSlotPeriod->timeSlots as $timeSlot) {
+                $person->setAvailability(new Availability(
+                    timeSlot: $timeSlot,
+                    availability: Availability::NO,
+                ));
             }
         }
     }
