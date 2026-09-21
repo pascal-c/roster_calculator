@@ -20,6 +20,7 @@ class Shift
         public readonly array $team = [],
         public readonly int $totalNeededPeople = 2,
         public readonly ?string $bundleId = null,
+        public readonly bool $avoidOnlyMen = false,
     ) {
         $this->stillNeededPeople = $this->totalNeededPeople - count($this->assignedPeople);
     }

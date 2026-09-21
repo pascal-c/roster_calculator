@@ -34,13 +34,21 @@ final class AvailabilityCheckerTest extends Unit
     }
 
     #[DataProvider('onlyMenDataProvider')]
-    public function testOnlyMen(Gender $genderCheckedPerson, Gender $genderAssignedPerson, Gender $genderAddedPerson, bool $expectedResult): void
-    {
+    public function testOnlyMen(
+        Gender $genderCheckedPerson,
+        Gender $genderAssignedPerson,
+        Gender $genderAddedPerson,
+        bool $configAvoidOnlyMen,
+        bool $expectedResult,
+    ): void {
         $person = $this->make(Person::class, ['gender' => $genderCheckedPerson]);
-        $shift = $this->make(Shift::class, ['assignedPeople' => [
-            $this->make(Person::class, ['gender' => Gender::FEMALE]),
-            $this->make(Person::class, ['gender' => $genderAssignedPerson]),
-        ]]);
+        $shift = $this->make(Shift::class, [
+            'assignedPeople' => [
+                $this->make(Person::class, ['gender' => Gender::FEMALE]),
+                $this->make(Person::class, ['gender' => $genderAssignedPerson]),
+            ],
+            'avoidOnlyMen' => $configAvoidOnlyMen,
+        ]);
         $this->resultService
             ->method('getAddedPeople')
             ->with($this->result, $shift)
@@ -58,25 +66,37 @@ final class AvailabilityCheckerTest extends Unit
             'genderCheckedPerson' => Gender::DIVERSE,
             'genderAssignedPerson' => Gender::MALE,
             'genderAddedPerson' => Gender::MALE,
+            'configAvoidOnlyMen' => true,
             'expectedResult' => false,
         ];
         yield 'when checkedPerson is male but no other' => [
             'genderCheckedPerson' => Gender::MALE,
             'genderAssignedPerson' => Gender::FEMALE,
             'genderAddedPerson' => Gender::DIVERSE,
+            'configAvoidOnlyMen' => true,
             'expectedResult' => false,
         ];
         yield 'when checkedPerson and an assigned person are male' => [
             'genderCheckedPerson' => Gender::MALE,
             'genderAssignedPerson' => Gender::MALE,
             'genderAddedPerson' => Gender::FEMALE,
+            'configAvoidOnlyMen' => true,
             'expectedResult' => true,
         ];
         yield 'when checkedPerson and an added person are male' => [
             'genderCheckedPerson' => Gender::MALE,
             'genderAssignedPerson' => Gender::DIVERSE,
             'genderAddedPerson' => Gender::MALE,
+            'configAvoidOnlyMen' => true,
             'expectedResult' => true,
+        ];
+
+        yield 'when configured avoidOnlyMen is false' => [
+            'genderCheckedPerson' => Gender::MALE,
+            'genderAssignedPerson' => Gender::MALE,
+            'genderAddedPerson' => Gender::MALE,
+            'configAvoidOnlyMen' => false,
+            'expectedResult' => false,
         ];
     }
 

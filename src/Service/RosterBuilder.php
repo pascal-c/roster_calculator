@@ -41,6 +41,9 @@ class RosterBuilder
     {
         $payload = $roster->getPreconditions();
 
+        $this->setRatingPointWeightings($payload['ratingPointWeightings'] ?? [], $roster);
+        $this->setAvoidOnlyMen($payload['avoidOnlyMen'] ?? false, $roster);
+
         foreach ($payload['people'] as $personPayload) {
             $this->addPerson($personPayload, $roster);
         }
@@ -72,8 +75,6 @@ class RosterBuilder
         foreach ($payload['otherDates'] ?? [] as $otherDatePayload) {
             $this->addOtherDate($otherDatePayload, $roster);
         }
-
-        $this->setRatingPointWeightings($payload['ratingPointWeightings'] ?? [], $roster);
     }
 
     private function addPerson(array $personPayload, Roster $roster): void
@@ -154,6 +155,7 @@ class RosterBuilder
             assignedPeople: $assignedPeople,
             team: array_filter($team),
             bundleId: $shiftPayload['bundleId'] ?? null,
+            avoidOnlyMen: $roster->getAvoidOnlyMen(), // this is set on the roster level for now
         );
 
         $roster->addShift($shift);
@@ -214,5 +216,10 @@ class RosterBuilder
         }
 
         $roster->setRatingPointWeightings($ratingPointWeights);
+    }
+
+    public function setAvoidOnlyMen(bool $avoidOnlyMen, Roster $roster): void
+    {
+        $roster->setAvoidOnlyMen($avoidOnlyMen);
     }
 }

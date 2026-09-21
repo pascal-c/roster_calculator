@@ -50,7 +50,7 @@ class AvailabilityChecker
 
     public function onlyMen(array $result, Shift $shift, Person $person): bool
     {
-        if (!$person->gender->isMale()) {
+        if (!$shift->avoidOnlyMen || !$person->gender->isMale()) {
             return false;
         }
 
