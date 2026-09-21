@@ -46,6 +46,7 @@ class Roster
 
     private array $people = [];
     private RatingPointWeightings $ratingPointWeightings;
+    private bool $avoidOnlyMen = false;
 
     private int $shiftCount = 0;
     private array $weekIds = [];
@@ -227,6 +228,18 @@ class Roster
     public function setRatingPointWeightings(RatingPointWeightings $ratingPointWeightings): static
     {
         $this->ratingPointWeightings = $ratingPointWeightings;
+
+        return $this;
+    }
+
+    public function getAvoidOnlyMen(): bool
+    {
+        return $this->avoidOnlyMen;
+    }
+
+    public function setAvoidOnlyMen(bool $avoidOnlyMen): static
+    {
+        $this->avoidOnlyMen = $avoidOnlyMen;
 
         return $this;
     }

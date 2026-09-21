@@ -456,6 +456,7 @@ final class RosterBuilderTest extends Unit
         $shift2 = $roster->getShift('shift2');
         $this->assertSame([$shift2], $shift1->bundledShifts);
         $this->assertSame([$shift1], $shift2->bundledShifts);
+        $this->assertFalse($roster->getAvoidOnlyMen());
     }
 
     public function testBuildFromRosterWithExistingRosterData(): void
@@ -496,6 +497,7 @@ final class RosterBuilderTest extends Unit
                 ],
             ],
             'ratingPointWeightings' => [],
+            'avoidOnlyMen' => true,
         ]);
 
         // execute
@@ -509,5 +511,6 @@ final class RosterBuilderTest extends Unit
         $this->assertInstanceOf(Person::class, $person);
         $this->assertInstanceOf(Location::class, $location);
         $this->assertInstanceOf(Shift::class, $shift);
+        $this->assertTrue($roster->getAvoidOnlyMen());
     }
 }

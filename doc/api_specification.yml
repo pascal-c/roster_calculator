@@ -98,6 +98,9 @@ components:
             $ref: '#/components/schemas/Person'
         ratingPointWeightings:
           $ref: '#/components/schemas/RatingPointWeightings'
+        avoidOnlyMen:
+          type: boolean
+          description: If true, the algorithm will try to avoid assigning only men to shifts
     Roster:
       type: object
       required:
