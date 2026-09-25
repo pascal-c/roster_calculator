@@ -174,10 +174,10 @@ class RosterBuilder
 
     private function addOtherDate(array $otherDatePayload, Roster $roster): void
     {
-        $assignedPeople = array_map(
-            fn (string $id): Person => $roster->getPerson($id),
+        $assignedPeople = array_filter(array_map(
+            fn (string $id): ?Person => $roster->getPerson($id),
             $otherDatePayload['assignedPeople'] ?? [],
-        );
+        ));
         $otherDate = new OtherDate(
             id: $otherDatePayload['id'],
             timeSlotPeriod: new TimeSlotPeriod(

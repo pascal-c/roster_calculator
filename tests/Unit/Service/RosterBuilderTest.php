@@ -226,7 +226,7 @@ final class RosterBuilderTest extends Unit
                     'date' => $date->format('Y-m-d'),
                     'daytime' => TimeSlotPeriod::AM,
                     'locationId' => 'location1',
-                    'assignedPeople' => ['person1'],
+                    'assignedPeople' => ['person1', 'non-existent-person-id'],
                 ],
             ],
             'ratingPointWeightings' => [],
