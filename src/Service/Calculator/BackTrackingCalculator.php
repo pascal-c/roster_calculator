@@ -10,9 +10,10 @@ use App\Service\TimeService;
 
 class BackTrackingCalculator
 {
-    public const TIMEOUT_SECONDS = 85;
+    public const DEFAULT_CALCULATION_TIME = 85;
     public int $counter = 0;
     private int $time;
+    private int $calculationTime = self::DEFAULT_CALCULATION_TIME;
 
     public function __construct(
         private ResultService $resultService,
@@ -50,6 +51,11 @@ class BackTrackingCalculator
 
     public function isTimedOut(): bool
     {
-        return $this->timeService->unixTimestamp() - $this->time > self::TIMEOUT_SECONDS;
+        return $this->timeService->unixTimestamp() - $this->time > $this->calculationTime;
+    }
+
+    public function setCalculationTime(int $calculationTime): void
+    {
+        $this->calculationTime = $calculationTime;
     }
 }

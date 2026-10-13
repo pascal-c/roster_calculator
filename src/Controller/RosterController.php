@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Repository\RosterRepository;
 use App\Serializer\ResultSerializer;
 use App\Service\Calculator;
+use App\Service\Calculator\BackTrackingCalculator;
 use App\Service\ResultService;
 use App\Service\RosterBuilder;
 use App\Service\TimeService;
@@ -46,7 +47,9 @@ class RosterController extends AbstractController
         }
 
         $roster->setStartedAt($this->timeService->now());
-        $result = $this->calculator->calculate($roster);
+
+        $calculationTime = $payload['calculationTime'] ?? BackTrackingCalculator::DEFAULT_CALCULATION_TIME;
+        $result = $this->calculator->calculate($roster, $calculationTime);
         $roster->setResult($result);
         $roster->setCompletedAt($this->timeService->now());
         $roster->setStatus(Status::COMPLETED->value);

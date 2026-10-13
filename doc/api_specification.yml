@@ -101,6 +101,11 @@ components:
         avoidOnlyMen:
           type: boolean
           description: If true, the algorithm will try to avoid assigning only men to shifts
+        calculationTime:
+          type: integer
+          minimum: 1
+          maximum: 85
+          description: Maximum time in seconds the calculation is allowed to run. If the calculation takes longer, it will be stopped and the best result so far will be returned.
     Roster:
       type: object
       required:
