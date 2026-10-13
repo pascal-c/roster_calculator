@@ -17,11 +17,12 @@ class Calculator
     ) {
     }
 
-    public function calculate(Roster $roster): array
+    public function calculate(Roster $roster, int $calculationTime = BackTrackingCalculator::DEFAULT_CALCULATION_TIME): array
     {
-        set_time_limit(BackTrackingCalculator::TIMEOUT_SECONDS + 5);
+        set_time_limit($calculationTime + 5);
 
         $firstResult = $this->simpleCalculator->calculate($roster);
+        $this->backTrackingCalculator->setCalculationTime($calculationTime);
         $bestResult = $this->backTrackingCalculator->calculate(
             $roster,
             $roster->getShifts(),
